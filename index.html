@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#f4f5f0">
+	<meta name="description" content="YKS hazırlık sürecini planla, takip et ve hedeflerine ilerle.">
+	<title>Rota | YKS Öğrenci Paneli</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<style>
+		:root {
+			color-scheme: light;
+			--ink: #1d2925;
+			--muted: #7d8983;
+			--line: #e8ebe5;
+			--paper: #ffffff;
+			--canvas: #f4f5f0;
+			--green: #b7ee76;
+			--green-dark: #335b32;
+			--coral: #e9785c;
+			--blue: #a7d6e8;
+			--sidebar: #20332c;
+			font-family: "DM Sans", sans-serif;
+			font-synthesis: none;
+		}
+		* { box-sizing: border-box; }
+		body { margin: 0; min-width: 320px; background: var(--canvas); color: var(--ink); }
+		button, input { font: inherit; }
+		button { color: inherit; }
+		.app-shell { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); }
+		.sidebar { background: var(--sidebar); color: #fff; padding: 27px 17px 20px; display: flex; flex-direction: column; min-height: 100vh; }
+		.brand { display: flex; align-items: center; gap: 11px; padding: 0 11px; margin-bottom: 48px; color: #fff; text-decoration: none; }
+		.brand-mark { width: 35px; height: 35px; display: grid; place-items: center; background: var(--green); color: var(--sidebar); border-radius: 11px; }
+		.brand-name { font: 800 20px/1 "Manrope", sans-serif; letter-spacing: 0; }
+		.brand-name span { color: var(--green); }
+		.nav-label { margin: 0 12px 10px; color: #91a198; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; }
+		.nav-list { display: grid; gap: 5px; }
+		.nav-item { width: 100%; min-height: 44px; display: flex; align-items: center; gap: 12px; border: 0; border-radius: 8px; padding: 0 12px; background: transparent; color: #c1ccc6; text-align: left; cursor: pointer; transition: background .18s ease, color .18s ease; }
+		.nav-item[hidden] { display: none !important; }
+		.nav-item:hover { background: #2b4238; color: #fff; }
+		.nav-item[aria-current="page"] { color: var(--sidebar); background: var(--green); font-weight: 700; }
+		.nav-item svg { width: 18px; height: 18px; flex: 0 0 auto; }
+		.nav-item .nav-count { margin-left: auto; font-size: 11px; opacity: .8; }
+		.sidebar-spacer { flex: 1; min-height: 38px; }
+		.streak-box { margin: 0 3px 17px; padding: 15px; border: 1px solid #405249; border-radius: 9px; background: #293d34; }
+		.streak-top { display: flex; justify-content: space-between; align-items: center; color: #c5d0ca; font-size: 12px; }
+		.streak-top strong { color: #fff; font: 700 15px "Manrope", sans-serif; }
+		.streak-days { display: flex; justify-content: space-between; margin-top: 13px; }
+		.streak-day { display: grid; justify-items: center; gap: 6px; color: #92a198; font-size: 9px; }
+		.streak-dot { width: 19px; height: 19px; display: grid; place-items: center; border: 1px solid #52645a; border-radius: 50%; color: #a6b3ab; font-size: 10px; }
+		.streak-day.done .streak-dot { border-color: var(--green); background: var(--green); color: var(--sidebar); }
+		.sidebar-help { display: flex; align-items: center; gap: 10px; padding: 11px 12px; color: #c1ccc6; font-size: 12px; text-decoration: none; }
+		.sidebar-help svg { width: 17px; height: 17px; }
+		.main-area { min-width: 0; }
+		.sidebar-backdrop { display: none; }
+		.topbar { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 clamp(20px, 4vw, 56px); border-bottom: 1px solid var(--line); background: rgba(255,255,255,.72); }
+		.breadcrumb { color: var(--muted); font-size: 13px; }
+		.breadcrumb strong { color: var(--ink); font-weight: 600; }
+		.top-actions { display: flex; align-items: center; gap: 12px; }
+		.icon-button { position: relative; width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: #fff; cursor: pointer; }
+		.icon-button svg { width: 18px; height: 18px; }
+		.notification-dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border: 1px solid white; border-radius: 50%; background: var(--coral); }
+		.profile-button { display: flex; align-items: center; gap: 9px; padding: 0 0 0 5px; border: 0; background: transparent; text-align: left; cursor: pointer; }
+		.avatar { width: 37px; height: 37px; display: grid; place-items: center; border-radius: 50%; background: #f1c7a6; color: #583f31; font: 700 13px "Manrope", sans-serif; }
+		.profile-copy { display: grid; gap: 2px; }
+		.profile-copy strong { font-size: 12px; }
+		.profile-copy span { color: var(--muted); font-size: 10px; }
+		.profile-button > svg { width: 14px; height: 14px; color: var(--muted); }
+		.content { width: min(1190px, 100%); margin: 0 auto; padding: 36px clamp(20px, 4vw, 56px) 55px; }
+		.welcome-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 27px; }
+		.eyebrow { margin: 0 0 8px; color: #78857e; font-size: 11px; font-weight: 700; letter-spacing: 1.25px; text-transform: uppercase; }
+		h1, h2, h3, p { margin-top: 0; }
+		h1 { margin-bottom: 7px; font: 800 clamp(25px, 3vw, 34px)/1.15 "Manrope", sans-serif; letter-spacing: 0; }
+		.welcome-subtitle { margin: 0; color: var(--muted); font-size: 13px; }
+		.date-chip { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: #59665f; font-size: 11px; white-space: nowrap; }
+		.date-chip svg { width: 15px; height: 15px; }
+		.hero-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(245px, .85fr); gap: 16px; }
+		.focus-panel { position: relative; min-height: 213px; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 27px 30px; border-radius: 10px; background: var(--green); }
+		.focus-panel::after { content: ""; position: absolute; width: 245px; height: 245px; right: 2%; top: -105px; border: 1px solid rgba(51,91,50,.15); border-radius: 50%; box-shadow: 0 0 0 28px rgba(51,91,50,.045), 0 0 0 56px rgba(51,91,50,.035); }
+		.focus-copy { position: relative; z-index: 1; max-width: 420px; }
+		.focus-copy .eyebrow { color: #45633d; margin-bottom: 10px; }
+		.focus-copy h2 { margin-bottom: 8px; font: 800 22px/1.2 "Manrope", sans-serif; letter-spacing: 0; }
+		.focus-copy p { margin-bottom: 18px; color: #455d3e; font-size: 12px; line-height: 1.6; }
+		.primary-button { display: inline-flex; align-items: center; gap: 8px; min-height: 37px; padding: 0 14px; border: 0; border-radius: 6px; background: var(--sidebar); color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; transition: transform .18s ease, background .18s ease; }
+		.primary-button:hover { transform: translateY(-1px); background: #2d493c; }
+		.primary-button svg { width: 14px; height: 14px; }
+		.focus-progress { position: relative; z-index: 1; width: 100px; height: 100px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: conic-gradient(var(--sidebar) 0 68%, rgba(51,91,50,.16) 68% 100%); }
+		.focus-progress::before { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--green); }
+		.focus-progress span { position: relative; display: grid; justify-items: center; color: var(--sidebar); font: 800 20px/1 "Manrope", sans-serif; }
+		.focus-progress small { margin-top: 4px; font: 600 9px "DM Sans", sans-serif; }
+		.countdown-panel { min-height: 213px; display: flex; flex-direction: column; justify-content: space-between; padding: 21px 22px; border-radius: 10px; background: var(--sidebar); color: #fff; }
+		.countdown-heading { display: flex; justify-content: space-between; align-items: center; color: #d3ded7; font-size: 11px; }
+		.countdown-heading svg { width: 16px; height: 16px; color: var(--green); }
+		.countdown-numbers { display: flex; align-items: center; gap: 12px; }
+		.countdown-number { display: grid; gap: 4px; }
+		.countdown-number strong { font: 800 31px/1 "Manrope", sans-serif; }
+		.countdown-number span { color: #a8b7ae; font-size: 9px; }
+		.countdown-separator { align-self: start; padding-top: 3px; color: #799087; font: 700 20px "Manrope", sans-serif; }
+		.countdown-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid #40534a; color: #b8c5bd; font-size: 10px; }
+		.countdown-foot strong { color: var(--green); font-weight: 700; }
+		.stats-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; margin-top: 16px; }
+		.stat-card { min-height: 108px; display: flex; justify-content: space-between; gap: 9px; padding: 17px 17px 14px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
+		.stat-label { display: block; margin-bottom: 9px; color: var(--muted); font-size: 10px; }
+		.stat-value { font: 800 23px/1 "Manrope", sans-serif; letter-spacing: 0; }
+		.stat-value small { margin-left: 3px; color: #859088; font: 600 10px "DM Sans", sans-serif; }
+		.stat-note { display: flex; align-items: center; gap: 4px; margin-top: 8px; color: #54834d; font-size: 9px; }
+		.stat-note.neutral { color: #87918a; }
+		.stat-icon { width: 33px; height: 33px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 8px; background: #f0f5e9; color: #527347; }
+		.stat-icon.coral { background: #fff0ec; color: #c8664d; }
+		.stat-icon.blue { background: #edf7fa; color: #4a879c; }
+		.stat-icon svg { width: 17px; height: 17px; }
+		.lower-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .9fr); gap: 16px; margin-top: 16px; }
+		.panel { min-width: 0; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
+		.panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 19px 20px 14px; }
+		.panel-title { margin: 0; font: 700 14px/1.3 "Manrope", sans-serif; letter-spacing: 0; }
+		.panel-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 10px; }
+		.text-button { display: inline-flex; align-items: center; gap: 5px; padding: 5px 0; border: 0; background: transparent; color: #4d7545; font-size: 10px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+		.text-button svg { width: 13px; height: 13px; }
+		.task-list { padding: 0 20px 9px; }
+		.task-row { min-height: 56px; display: flex; align-items: center; gap: 11px; border-top: 1px solid #eff1ed; }
+		.task-check { position: relative; width: 18px; height: 18px; flex: 0 0 auto; margin: 0; appearance: none; border: 1.5px solid #cbd2cb; border-radius: 5px; background: #fff; cursor: pointer; }
+		.task-check:checked { border-color: #5b8252; background: #5b8252; }
+		.task-check:checked::after { content: ""; position: absolute; width: 8px; height: 4px; left: 4px; top: 5px; border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff; transform: rotate(-45deg); }
+		.task-copy { min-width: 0; flex: 1; }
+		.task-copy strong { display: block; overflow: hidden; color: #35423b; font-size: 11px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+		.task-copy span { display: block; margin-top: 4px; color: #939c96; font-size: 9px; }
+		.task-row.is-done .task-copy strong { color: #9aa39d; text-decoration: line-through; }
+		.task-tag { padding: 5px 7px; border-radius: 4px; background: #eff5e9; color: #537348; font-size: 9px; white-space: nowrap; }
+		.task-tag.blue { background: #edf6f8; color: #4f8391; }
+		.task-tag.coral { background: #fff0eb; color: #b96551; }
+		.week-panel { padding-bottom: 17px; }
+		.chart-legend { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 9px; }
+		.legend-dot { width: 7px; height: 7px; display: inline-block; margin-right: 5px; border-radius: 50%; background: #a8d779; }
+		.legend-dot.target { background: #e9ece6; }
+		.chart { height: 132px; display: grid; grid-template-columns: repeat(7, 1fr); align-items: end; gap: 13px; margin: 8px 20px 0; padding: 0 3px; border-bottom: 1px solid var(--line); background: repeating-linear-gradient(to top, transparent 0, transparent 32px, #f0f2ed 33px, transparent 34px); }
+		.chart-day { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 7px; color: #8d9891; font-size: 9px; }
+		.bar-track { width: min(22px, 72%); height: 97px; display: flex; align-items: flex-end; border-radius: 4px 4px 0 0; background: #f0f2ed; }
+		.bar { width: 100%; min-height: 5px; border-radius: 4px 4px 0 0; background: #a8d779; animation: grow .6s ease both; transform-origin: bottom; }
+		.bar.today { background: var(--coral); }
+		@keyframes grow { from { transform: scaleY(.15); } to { transform: scaleY(1); } }
+		.chart-note { margin: 11px 20px 0; color: #88938c; font-size: 9px; }
+		.view { display: none; }
+		.view.active { display: block; animation: reveal .24s ease both; }
+		@keyframes reveal { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+		.secondary-view { min-height: 390px; padding: 24px; }
+		.secondary-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 22px; }
+		.secondary-heading h2 { margin: 0 0 6px; font: 800 22px "Manrope", sans-serif; letter-spacing: 0; }
+		.secondary-heading p { margin: 0; color: var(--muted); font-size: 12px; }
+		.simple-list { display: grid; }
+		.simple-row { display: flex; align-items: center; gap: 13px; min-height: 67px; border-top: 1px solid var(--line); }
+		.simple-row[hidden] { display: none; }
+		.simple-symbol { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; background: #eff5e9; color: #537348; }
+		.simple-symbol svg { width: 17px; height: 17px; }
+		.simple-copy { flex: 1; min-width: 0; }
+		.simple-copy strong { display: block; font-size: 12px; }
+		.simple-copy span { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
+		.simple-meta { color: #64736a; font-size: 10px; white-space: nowrap; }
+		.search-wrap { position: relative; }
+		.search-wrap input { width: 190px; height: 36px; padding: 0 12px 0 34px; border: 1px solid var(--line); border-radius: 6px; outline: none; background: #fff; font-size: 11px; }
+		.search-wrap input:focus { border-color: #a1c77a; box-shadow: 0 0 0 3px #a1c77a25; }
+		.search-wrap svg { position: absolute; left: 11px; top: 10px; width: 15px; height: 15px; color: var(--muted); }
+		.toast { position: fixed; right: 22px; bottom: 22px; z-index: 5; max-width: calc(100vw - 44px); padding: 12px 16px; border-radius: 7px; background: var(--sidebar); color: #fff; font-size: 12px; box-shadow: 0 8px 26px #16251f30; opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity .2s ease, transform .2s ease; }
+		.toast.show { opacity: 1; transform: translateY(0); }
+		.mobile-menu { display: none; }
+		.dashboard-app[hidden], .welcome-screen[hidden] { display: none !important; }
+		.welcome-screen { min-height: 100vh; background: #f4f5f0; }
+		.welcome-header { position: absolute; z-index: 2; top: 0; left: 0; width: 100%; height: 78px; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(22px, 6vw, 88px); color: white; }
+		.welcome-brand { display: inline-flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
+		.welcome-brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: var(--green); color: var(--sidebar); }
+		.welcome-brand-mark svg { width: 19px; height: 19px; }
+		.welcome-brand-name { font: 800 20px/1 "Manrope", sans-serif; }
+		.welcome-brand-name span { color: var(--green); }
+		.welcome-nav { display: flex; align-items: center; gap: 27px; }
+		.welcome-nav a { color: #f0f3ef; font-size: 12px; text-decoration: none; }
+		.welcome-nav a:hover { color: var(--green); }
+		.welcome-login { min-height: 38px; padding: 0 15px; border: 1px solid #ffffff85; border-radius: 6px; background: transparent; color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; }
+		.welcome-login:hover { border-color: var(--green); color: var(--green); }
+		.welcome-hero { position: relative; min-height: min(690px, calc(100svh - 145px)); display: flex; align-items: center; overflow: hidden; background: #20332c; color: #fff; }
+		.welcome-hero::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(90deg, rgba(23,39,32,.94) 0%, rgba(23,39,32,.79) 42%, rgba(23,39,32,.18) 100%), url("https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=2400&q=85"); background-position: center, center 46%; background-size: cover; }
+		.welcome-hero::after { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: #ffffff27; }
+		.welcome-hero-inner { position: relative; z-index: 1; width: min(1190px, 100%); margin: 0 auto; padding: 125px clamp(22px, 6vw, 88px) 90px; }
+		.welcome-copy { max-width: 580px; }
+		.welcome-kicker { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 20px; color: var(--green); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; }
+		.welcome-kicker::before { content: ""; width: 24px; height: 1px; background: var(--green); }
+		.welcome-copy h1 { margin: 0 0 17px; font: 800 clamp(42px, 6vw, 72px)/1.02 "Manrope", sans-serif; letter-spacing: 0; }
+		.welcome-copy h1 span { color: var(--green); }
+		.welcome-copy p { max-width: 460px; margin: 0; color: #e0e7e2; font-size: 15px; line-height: 1.75; }
+		.welcome-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 29px; }
+		.welcome-primary { min-height: 47px; display: inline-flex; align-items: center; gap: 12px; padding: 0 18px; border: 0; border-radius: 6px; background: var(--green); color: var(--sidebar); font-size: 12px; font-weight: 700; cursor: pointer; transition: background .18s ease, transform .18s ease; }
+		.welcome-primary:hover { transform: translateY(-1px); background: #c6f594; }
+		.welcome-primary svg { width: 16px; height: 16px; }
+		.welcome-login-note { min-height: 17px; margin: 11px 0 0; color: #d3ddd6; font-size: 10px; }
+		.welcome-login-note[hidden] { display: none; }
+		.welcome-scroll { position: absolute; right: clamp(22px, 6vw, 88px); bottom: 29px; display: flex; align-items: center; gap: 10px; color: #e0e7e2; font-size: 10px; }
+		.welcome-scroll span { width: 25px; height: 1px; background: var(--green); }
+		.welcome-intro { padding: 38px clamp(22px, 6vw, 88px) 48px; background: #f4f5f0; }
+		.welcome-intro-inner { width: min(1190px, 100%); margin: 0 auto; }
+		.welcome-intro-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-bottom: 25px; }
+		.welcome-intro-heading .eyebrow { margin-bottom: 8px; color: #68805f; }
+		.welcome-intro-heading h2 { max-width: 420px; margin: 0; font: 800 24px/1.2 "Manrope", sans-serif; letter-spacing: 0; }
+		.welcome-intro-heading p { max-width: 390px; margin: 0; color: #6f7c74; font-size: 12px; line-height: 1.7; }
+		.welcome-pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #dfe4dc; }
+		.welcome-pillar { display: flex; gap: 13px; padding: 18px 22px 0 0; }
+		.welcome-pillar + .welcome-pillar { padding-left: 22px; border-left: 1px solid #dfe4dc; }
+		.pillar-number { color: #8ca27c; font: 700 11px "Manrope", sans-serif; }
+		.welcome-pillar h3 { margin: 0 0 5px; font: 700 13px "Manrope", sans-serif; }
+		.welcome-pillar p { margin: 0; color: #76827a; font-size: 10px; line-height: 1.65; }
+		.welcome-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px clamp(22px, 6vw, 88px); border-top: 1px solid #e4e8e1; color: #849088; font-size: 10px; }
+		@media (max-width: 1000px) {
+			.app-shell { grid-template-columns: 220px minmax(0, 1fr); }
+			.stats-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+			.hero-grid { grid-template-columns: minmax(0, 1.3fr) minmax(220px, .8fr); }
+			.lower-grid { grid-template-columns: 1fr; }
+		}
+		@media (min-width: 761px) and (max-width: 1000px) {
+			.lower-grid { grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr); }
+		}
+		@media (max-width: 700px) {
+			.welcome-header { height: 66px; padding: 0 18px; }
+			.welcome-nav { gap: 13px; }
+			.welcome-nav a { display: none; }
+			.welcome-login { min-height: 35px; padding: 0 12px; }
+			.welcome-hero { min-height: min(650px, calc(100svh - 205px)); }
+			.welcome-hero::before { background-image: linear-gradient(90deg, rgba(23,39,32,.91), rgba(23,39,32,.57)), url("https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80"); background-position: center, 59% center; }
+			.welcome-hero-inner { padding: 100px 22px 80px; }
+			.welcome-copy { max-width: 480px; }
+			.welcome-copy h1 { font-size: clamp(42px, 12vw, 58px); }
+			.welcome-copy p { font-size: 13px; }
+			.welcome-scroll { right: 22px; bottom: 22px; }
+			.welcome-intro { padding: 28px 22px 35px; }
+			.welcome-intro-heading { align-items: flex-start; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+			.welcome-intro-heading h2 { font-size: 20px; }
+			.welcome-pillars { grid-template-columns: 1fr; }
+			.welcome-pillar, .welcome-pillar + .welcome-pillar { padding: 13px 0; border-left: 0; }
+			.welcome-pillar + .welcome-pillar { border-top: 1px solid #dfe4dc; }
+			.welcome-footer { padding: 16px 22px; }
+			.app-shell { display: block; }
+			.sidebar { position: fixed; z-index: 10; inset: 0 auto 0 0; width: 270px; min-height: 100vh; transform: translateX(-100%); transition: transform .22s ease; box-shadow: 12px 0 35px #15251e24; }
+			.sidebar.open { transform: translateX(0); }
+			.sidebar-backdrop { position: fixed; z-index: 9; inset: 0; display: none; border: 0; background: #13231b70; }
+			.sidebar-backdrop.show { display: block; }
+			.brand { margin-bottom: 32px; }
+			.topbar { min-height: 64px; padding: 0 18px; }
+			.mobile-menu { width: 34px; height: 34px; display: grid; place-items: center; margin-right: 10px; border: 1px solid var(--line); border-radius: 7px; background: white; cursor: pointer; }
+			.mobile-menu svg { width: 17px; height: 17px; }
+			.topbar-left { display: flex; align-items: center; min-width: 0; }
+			.breadcrumb { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.top-actions { gap: 8px; }
+			.profile-copy, .profile-button > svg { display: none; }
+			.content { padding: 27px 18px 38px; }
+			.welcome-row { align-items: flex-start; flex-direction: column; margin-bottom: 20px; }
+			.date-chip { align-self: flex-start; }
+			.hero-grid { grid-template-columns: 1fr; }
+			.focus-panel { min-height: 194px; padding: 23px 20px; }
+			.focus-progress { width: 80px; height: 80px; }
+			.focus-progress span { font-size: 17px; }
+			.countdown-panel { min-height: 170px; }
+			.countdown-numbers { justify-content: center; }
+			.countdown-number strong { font-size: 27px; }
+			.stats-row { gap: 9px; margin-top: 12px; }
+			.stat-card { min-height: 100px; padding: 13px 12px; }
+			.stat-value { font-size: 20px; }
+			.stat-icon { width: 29px; height: 29px; }
+			.lower-grid { gap: 12px; margin-top: 12px; }
+			.panel-header { padding: 16px 14px 12px; }
+			.task-list { padding: 0 14px 7px; }
+			.task-row { gap: 8px; }
+			.task-tag { padding: 4px 5px; font-size: 8px; }
+			.chart { gap: 7px; margin-right: 14px; margin-left: 14px; }
+			.chart-note { margin-right: 14px; margin-left: 14px; }
+			.secondary-view { padding: 18px 14px; }
+			.secondary-heading { flex-direction: column; }
+			.search-wrap, .search-wrap input { width: 100%; }
+			.simple-meta { font-size: 9px; }
+		}
+		@media (prefers-reduced-motion: reduce) {
+			*, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+		}
+		.welcome-header { position: relative; height: 70px; color: var(--ink); background: var(--canvas); }
+		.welcome-brand { color: var(--ink); }
+		.welcome-nav a { color: #536159; }
+		.welcome-login { border-color: #cbd4cb; color: var(--ink); }
+		.welcome-hero { min-height: min(650px, calc(100svh - 210px)); background: #e8eee4; color: var(--ink); }
+		.welcome-hero::before, .welcome-hero::after { display: none; }
+		.welcome-hero-inner { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: center; gap: clamp(32px, 5vw, 72px); width: min(1280px, 100%); padding: 52px clamp(22px, 6vw, 88px) 58px; }
+		.welcome-copy { max-width: 510px; animation: welcome-in .55s ease both; }
+		.welcome-copy h1 { font-size: clamp(40px, 5vw, 62px); }
+		.welcome-copy p { color: #536159; }
+		.welcome-login-note { color: #536159; }
+		.welcome-scroll { display: none; }
+		.welcome-preview { width: 100%; max-width: 570px; justify-self: end; overflow: hidden; padding: 19px 20px 14px; border: 1px solid #dfe5dc; border-radius: 9px; background: #fff; box-shadow: 0 18px 44px rgba(37, 53, 42, .11); animation: preview-in .7s .08s ease both; }
+		.preview-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 15px; border-bottom: 1px solid #edf0eb; }
+		.preview-heading { display: grid; gap: 5px; }
+		.preview-kicker { color: #7d8983; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+		.preview-heading strong { font: 700 14px "Manrope", sans-serif; }
+		.preview-avatar { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: #f4ded4; color: #784b3e; font: 700 10px "Manrope", sans-serif; }
+		.preview-metrics { display: grid; grid-template-columns: 1fr 1fr; padding: 15px 0 13px; border-bottom: 1px solid #edf0eb; }
+		.preview-metric { display: grid; gap: 5px; }
+		.preview-metric + .preview-metric { padding-left: 18px; border-left: 1px solid #e8ece6; }
+		.preview-metric-label { color: #7d8983; font-size: 9px; }
+		.preview-metric-value { font: 800 22px/1 "Manrope", sans-serif; }
+		.preview-metric-value small { margin-left: 3px; color: #77837b; font: 600 9px "DM Sans", sans-serif; }
+		.preview-metric-change { color: #4c8051; font-size: 9px; }
+		.preview-chart-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-top: 13px; }
+		.preview-chart-heading strong { font: 700 11px "Manrope", sans-serif; }
+		.preview-chart-heading span { color: #89948d; font-size: 9px; }
+		.preview-chart { height: 128px; margin-top: 7px; background: repeating-linear-gradient(to bottom, transparent 0, transparent 30px, #eef1ed 31px, transparent 32px); }
+		.preview-chart svg { width: 100%; height: 100%; overflow: visible; }
+		.preview-chart .trend-area { fill: #f9eee8; opacity: .8; }
+		.preview-chart .trend-line { fill: none; stroke: var(--coral); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 520; stroke-dashoffset: 520; animation: draw-trend 1.5s .25s ease-out forwards; }
+		.preview-chart .trend-point { fill: #fff; stroke: var(--coral); stroke-width: 2.5; transform-box: fill-box; transform-origin: center; animation: point-pop .4s .9s ease-out both; }
+		.preview-chart-labels { display: flex; justify-content: space-between; margin-top: 2px; color: #87928a; font-size: 8px; }
+		.preview-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; padding-top: 11px; border-top: 1px solid #edf0eb; color: #78847c; font-size: 9px; }
+		.preview-footer strong { color: #4d7848; font-weight: 700; }
+		.welcome-proof { padding: 25px clamp(22px, 6vw, 88px); background: #f8e8df; }
+		.welcome-proof-inner { width: min(1104px, 100%); display: flex; align-items: center; justify-content: space-between; gap: 26px; margin: 0 auto; }
+		.proof-copy { max-width: 530px; }
+		.proof-kicker { display: block; margin-bottom: 7px; color: #9c5b45; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+		.proof-copy h2 { margin: 0 0 5px; font: 700 16px "Manrope", sans-serif; }
+		.proof-copy p { margin: 0; color: #745f57; font-size: 10px; line-height: 1.6; }
+		.proof-result { display: flex; align-items: center; gap: 12px; flex: 0 0 auto; }
+		.proof-result strong { color: #273a30; font: 800 25px/1 "Manrope", sans-serif; }
+		.proof-result span { color: #9c5b45; font-size: 12px; }
+		.proof-result small { color: #745f57; font-size: 9px; }
+		.welcome-intro { padding-top: 34px; }
+		@keyframes draw-trend { to { stroke-dashoffset: 0; } }
+		@keyframes point-pop { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
+		@keyframes preview-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+		@keyframes welcome-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+		@media (max-width: 850px) {
+			.welcome-hero { min-height: 0; }
+			.welcome-hero-inner { grid-template-columns: 1fr; gap: 28px; padding-top: 42px; padding-bottom: 42px; }
+			.welcome-preview { max-width: 620px; justify-self: start; }
+		}
+		@media (max-width: 700px) {
+			.welcome-header { height: 62px; padding: 0 18px; }
+			.welcome-hero-inner { gap: 22px; padding: 35px 18px 28px; }
+			.welcome-copy h1 { font-size: clamp(38px, 11vw, 52px); }
+			.welcome-copy p { font-size: 12px; }
+			.welcome-preview { padding: 15px 14px 12px; }
+			.preview-metric-value { font-size: 19px; }
+			.preview-metric + .preview-metric { padding-left: 12px; }
+			.preview-chart { height: 110px; }
+			.welcome-proof { padding: 20px 18px; }
+			.welcome-proof-inner { align-items: flex-start; flex-direction: column; gap: 17px; }
+			.proof-result strong { font-size: 22px; }
+			.welcome-intro { padding: 28px 18px 34px; }
+		}
+		.auth-overlay { position: fixed; z-index: 20; inset: 0; display: none; place-items: center; overflow-y: auto; padding: 22px; background: rgba(24, 39, 31, .62); }
+		.auth-overlay:not([hidden]) { display: grid; }
+		.auth-dialog { position: relative; width: min(460px, 100%); max-height: calc(100vh - 44px); overflow-y: auto; padding: 28px; border: 1px solid #e6eae4; border-radius: 10px; background: #fff; box-shadow: 0 24px 70px #14271e45; }
+		.auth-close { position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: #fff; cursor: pointer; }
+		.auth-close svg { width: 16px; height: 16px; }
+		.auth-heading { padding-right: 35px; }
+		.auth-heading .eyebrow { color: #63815b; }
+		.auth-heading h2 { margin: 0 0 6px; font: 800 24px "Manrope", sans-serif; }
+		.auth-heading p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
+		.auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 21px 0 17px; padding: 4px; border-radius: 7px; background: #f1f3ef; }
+		.auth-tab { min-height: 35px; border: 0; border-radius: 5px; background: transparent; color: #728078; font-size: 11px; font-weight: 600; cursor: pointer; }
+		.auth-tab[aria-pressed="true"] { background: white; color: var(--ink); box-shadow: 0 1px 3px #1c302110; }
+		.auth-form { display: grid; gap: 12px; }
+		.auth-form[hidden], .auth-fields[hidden] { display: none; }
+		.auth-field { display: grid; gap: 6px; color: #4f5c54; font-size: 10px; font-weight: 600; }
+		.auth-field input, .auth-field select { width: 100%; height: 39px; padding: 0 11px; border: 1px solid #dfe5dd; border-radius: 5px; outline: none; background: #fff; color: var(--ink); font-size: 11px; }
+		.auth-field input:focus, .auth-field select:focus { border-color: #9cbe80; box-shadow: 0 0 0 3px #b7ee7635; }
+		.auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+		.auth-submit { min-height: 42px; margin-top: 3px; border: 0; border-radius: 5px; background: var(--sidebar); color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; }
+		.auth-submit:disabled { opacity: .6; cursor: wait; }
+		.auth-message { margin: 2px 0 0; padding: 10px; border-radius: 5px; background: #f0f5e9; color: #3e6741; font-size: 10px; line-height: 1.5; }
+		.auth-message[data-error="true"] { background: #fff0ec; color: #9b4937; }
+		@media (max-width: 500px) {
+			.auth-overlay { padding: 12px; }
+			.auth-dialog { padding: 24px 19px; }
+			.auth-grid { grid-template-columns: 1fr; }
+		}
+		.auth-signout { min-height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: #536159; font-size: 10px; cursor: pointer; }
+		.auth-signout[hidden] { display: none !important; }
+		.student-coach-panel { margin-bottom: 16px; padding: 15px 18px; }
+		.student-coach-panel .panel-header { padding: 0 0 10px; }
+		.coach-link-form { display: flex; align-items: end; gap: 9px; }
+		.coach-link-form[hidden] { display: none !important; }
+		.coach-link-form .auth-field { flex: 1; }
+		.coach-link-form input { max-width: 260px; height: 36px; text-transform: uppercase; }
+		.coach-link-form button { min-height: 36px; }
+		.linked-coach-label { color: #52665a; font-size: 11px; }
+		.student-records-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 15px; }
+		.student-records-grid > .panel { padding: 17px 18px; }
+		.record-list { display: grid; }
+		.record-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; border-top: 1px solid #eff1ed; }
+		.record-row strong { display: block; font-size: 11px; }
+		.record-row span { display: block; margin-top: 4px; color: #859088; font-size: 9px; }
+		.record-empty { padding: 15px 0 4px; color: #859088; font-size: 10px; }
+		.compact-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 12px 0; }
+		.compact-form .auth-field { font-size: 9px; }
+		.compact-form .auth-field input, .compact-form .auth-field select { height: 34px; font-size: 10px; }
+		.compact-form .auth-submit { grid-column: 1 / -1; min-height: 35px; margin: 0; }
+		.coach-code-box { display: flex; align-items: center; gap: 12px; padding: 13px 15px; border: 1px solid #dfe5dc; border-radius: 8px; background: #fff; }
+		.coach-code-box span { color: #7d8983; font-size: 9px; font-weight: 700; }
+		.coach-code-box strong { color: var(--green-dark); font: 800 17px "Manrope", sans-serif; letter-spacing: 1px; }
+		.coach-code-box button { min-height: 30px; margin-left: auto; padding: 0 9px; border: 1px solid var(--line); border-radius: 5px; background: white; font-size: 9px; cursor: pointer; }
+		.coach-layout { display: grid; grid-template-columns: minmax(220px, .7fr) minmax(0, 1.5fr); gap: 14px; }
+		.coach-layout > .panel { min-width: 0; padding: 16px 18px; }
+		.coach-student-button { width: 100%; display: grid; gap: 4px; padding: 11px 10px; border: 0; border-top: 1px solid #eff1ed; background: #fff; text-align: left; cursor: pointer; }
+		.coach-student-button:hover, .coach-student-button[aria-current="true"] { background: #f2f6ec; }
+		.coach-student-button strong { font-size: 11px; }
+		.coach-student-button span { color: #859088; font-size: 9px; }
+		.coach-student-summary { padding-bottom: 14px; border-bottom: 1px solid #e8ece6; }
+		.coach-student-summary h3 { margin: 0 0 5px; font: 700 16px "Manrope", sans-serif; }
+		.coach-student-summary p { margin: 0; color: #78847c; font-size: 10px; }
+		.coach-detail-sections { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; margin-top: 16px; }
+		.coach-detail-sections h4 { margin: 0 0 8px; font: 700 11px "Manrope", sans-serif; }
+		.coach-detail-sections > section { min-width: 0; }
+		.coach-forms { display: grid; grid-template-columns: 1fr 1fr; gap: 17px; margin-top: 17px; padding-top: 15px; border-top: 1px solid #e8ece6; }
+		.coach-forms h4 { margin: 0 0 10px; font: 700 11px "Manrope", sans-serif; }
+		.coach-forms .compact-form { grid-template-columns: 1fr; }
+		.coach-forms .compact-form .auth-submit { grid-column: auto; }
+		@media (max-width: 800px) {
+			.coach-layout { grid-template-columns: 1fr; }
+			.coach-detail-sections, .coach-forms { grid-template-columns: 1fr; }
+		}
+		@media (max-width: 700px) {
+			.student-records-grid { grid-template-columns: 1fr; }
+			.student-coach-panel { padding: 14px; }
+			.coach-link-form { align-items: stretch; flex-direction: column; }
+			.coach-link-form input { max-width: none; }
+			.student-records-grid > .panel, .coach-layout > .panel { padding: 14px; }
+		}
+	</style>
+</head>
+<body>
+	<main class="welcome-screen" id="welcome-screen">
+		<header class="welcome-header">
+			<a class="welcome-brand" href="#top" aria-label="Rota ana sayfa">
+				<span class="welcome-brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18.5 18.5 5M7 6.5h11v11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+				<span class="welcome-brand-name">rota<span>.</span></span>
+			</a>
+			<nav class="welcome-nav" aria-label="Karşılama menüsü">
+				<a href="#yaklasim">Yaklaşım</a>
+				<a href="#sistem">Sistem</a>
+				<button class="welcome-login" type="button" data-open-auth="login">Giriş yap</button>
+			</nav>
+		</header>
+		<section class="welcome-hero" id="top" aria-labelledby="welcome-title">
+			<div class="welcome-hero-inner">
+				<div class="welcome-copy">
+					<div class="welcome-kicker">2027 YKS HAZIRLIK · ÖĞRENCİ PANELİ</div>
+					<h1 id="welcome-title">Hedefin belli.<br>Rotan <span>Rota.</span></h1>
+					<p>Çalışma planını düzenle, denemelerini takip et ve gelişimini tek yerde gör. YKS yolculuğunda sıradaki adımını bilerek ilerle.</p>
+					<div class="welcome-actions">
+						<button class="welcome-primary" type="button" data-open-auth="signup">Ücretsiz hesap oluştur <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+					</div>
+					<p class="welcome-login-note" id="welcome-login-note" role="status" aria-live="polite" hidden>Giriş ve kayıt, Supabase bağlantısını kurduğumuzda burada açılacak.</p>
+				</div>
+				<aside class="welcome-preview" aria-label="Örnek öğrenci çalışma grafiği">
+					<div class="preview-header"><div class="preview-heading"><span class="preview-kicker">ÖRNEK PANEL</span><strong>Haftalık ilerleme</strong></div><span class="preview-avatar" aria-label="Örnek öğrenci">EY</span></div>
+					<div class="preview-metrics"><div class="preview-metric"><span class="preview-metric-label">TYT net ortalaması</span><strong class="preview-metric-value">72,5<small>net</small></strong><span class="preview-metric-change">+12,5 · 8 haftada</span></div><div class="preview-metric"><span class="preview-metric-label">Bu hafta çalışma</span><strong class="preview-metric-value">18<small>s 40 dk</small></strong><span class="preview-metric-change">4 günlük çalışma serisi</span></div></div>
+					<div class="preview-chart-heading"><strong>Deneme netleri</strong><span>Son 8 hafta</span></div>
+					<div class="preview-chart"><svg viewBox="0 0 420 150" preserveAspectRatio="none" role="img" aria-label="Örnek veride TYT netlerinin sekiz haftalık yükselişi"><path class="trend-area" d="M12 128 C42 124 54 108 72 111 S112 91 132 96 S172 76 192 82 S232 60 252 67 S292 55 312 46 S352 39 372 29 S397 22 408 16 L408 146 L12 146 Z"/><path class="trend-line" d="M12 128 C42 124 54 108 72 111 S112 91 132 96 S172 76 192 82 S232 60 252 67 S292 55 312 46 S352 39 372 29 S397 22 408 16"/><circle class="trend-point" cx="408" cy="16" r="5"/></svg></div>
+					<div class="preview-chart-labels" aria-hidden="true"><span>1. hafta</span><span>3. hafta</span><span>5. hafta</span><span>8. hafta</span></div>
+					<div class="preview-footer"><span>Örnek çalışma senaryosu</span><strong>Gelişimini takip et <span aria-hidden="true">↗</span></strong></div>
+				</aside>
+			</div>
+			<div class="welcome-scroll" aria-hidden="true"><span></span>ROTA’NI KEŞFET</div>
+		</section>
+		<section class="welcome-intro" id="yaklasim" aria-labelledby="intro-title">
+			<div class="welcome-intro-inner">
+				<div class="welcome-intro-heading">
+					<div><p class="eyebrow">YKS hazırlığı, tek çalışma alanında</p><h2 id="intro-title">Hazırlık sürecin daha anlaşılır olsun.</h2></div>
+					<p>Rota; günlük planını, ders ilerlemeni ve deneme sonuçlarını bir araya getirir. Ne yaptığını gör, sıradaki hedefini seç.</p>
+				</div>
+				<div class="welcome-pillars" id="sistem">
+					<article class="welcome-pillar"><span class="pillar-number">01</span><div><h3>Planla</h3><p>Günlük çalışma adımlarını ve soru hedeflerini düzenle.</p></div></article>
+					<article class="welcome-pillar"><span class="pillar-number">02</span><div><h3>Takip et</h3><p>Derslerini, denemelerini ve çalışma süreni tek yerde gör.</p></div></article>
+					<article class="welcome-pillar"><span class="pillar-number">03</span><div><h3>İlerle</h3><p>Gelişimini izleyip sonraki hedefini daha net belirle.</p></div></article>
+				</div>
+			</div>
+		</section>
+		<section class="welcome-proof" aria-label="Örnek öğrenci ilerlemesi">
+			<div class="welcome-proof-inner"><div class="proof-copy"><span class="proof-kicker">ÖRNEK KULLANIM SENARYOSU</span><h2>Düzenli çalış, ilerlemeni net gör.</h2><p>Bu değerler tanıtım amaçlı demo verisidir; gerçek kullanıcı sonucu veya başarı garantisi değildir. Gerçek deneyimler oluştukça bu alanda paylaşılabilir.</p></div><div class="proof-result"><strong>60,0</strong><span aria-hidden="true">→</span><div><strong>72,5</strong><br><small>TYT neti · 8 haftalık örnek</small></div></div></div>
+		</section>
+		<footer class="welcome-footer"><span>rota. · YKS hazırlık alanın</span><span>2026–2027</span></footer>
+	</main>
+	<div class="auth-overlay" id="auth-overlay" hidden>
+		<section class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-description">
+			<button class="auth-close" id="auth-close" type="button" aria-label="Giriş penceresini kapat"><svg viewBox="0 0 24 24" fill="none"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+			<div class="auth-heading"><p class="eyebrow">ROTA HESABI</p><h2 id="auth-title">Hesabını oluştur</h2><p id="auth-description">Öğrenci veya koç olarak çalışma alanına katıl.</p></div>
+			<div class="auth-tabs" role="group" aria-label="Hesap işlemi"><button class="auth-tab" type="button" data-auth-mode="login" aria-pressed="false">Giriş yap</button><button class="auth-tab" type="button" data-auth-mode="signup" aria-pressed="true">Kayıt ol</button></div>
+			<form class="auth-form" id="login-form" hidden>
+				<label class="auth-field">E-posta<input name="email" type="email" autocomplete="email" required></label>
+				<label class="auth-field">Şifre<input name="password" type="password" autocomplete="current-password" required></label>
+				<button class="auth-submit" type="submit">Giriş yap</button>
+			</form>
+			<form class="auth-form" id="signup-form">
+				<label class="auth-field">Ad soyad<input name="display_name" type="text" autocomplete="name" maxlength="100" required></label>
+				<div class="auth-grid"><label class="auth-field">E-posta<input name="email" type="email" autocomplete="email" required></label><label class="auth-field">Şifre<input name="password" type="password" autocomplete="new-password" minlength="8" required></label></div>
+				<label class="auth-field">Hesap türü<select name="role" id="signup-role" required><option value="student">Öğrenciyim</option><option value="coach">Koçum</option></select></label>
+				<div class="auth-fields" id="student-signup-fields"><div class="auth-grid"><label class="auth-field">Sınıf seviyesi<select name="grade_level" required><option value="9">9. sınıf</option><option value="10">10. sınıf</option><option value="11">11. sınıf</option><option value="12" selected>12. sınıf</option><option value="mezun">Mezun</option></select></label><label class="auth-field">Okul<input name="school_name" type="text" maxlength="120" placeholder="Okul adı"></label></div><label class="auth-field">Alan / bölüm<input name="student_department" type="text" maxlength="120" placeholder="Örn. Sayısal"></label></div>
+				<div class="auth-fields" id="coach-signup-fields" hidden><label class="auth-field">Kurum<input name="institution_name" type="text" maxlength="160" placeholder="Kurum adı veya Bağımsız" required></label><label class="auth-field">Uzmanlık alanı<input name="coach_department" type="text" maxlength="120" placeholder="Örn. YKS Sayısal koçluğu"></label></div>
+				<button class="auth-submit" type="submit">Hesap oluştur</button>
+			</form>
+			<p class="auth-message" id="auth-message" role="status" aria-live="polite" hidden></p>
+		</section>
+	</div>
+	<div class="dashboard-app" id="dashboard-app" hidden>
+	<div class="app-shell">
+		<aside class="sidebar" id="sidebar" aria-label="Ana menü">
+			<a class="brand" href="#genel-bakis" aria-label="Rota ana sayfa">
+				<span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18.5 18.5 5M7 6.5h11v11" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+				<span class="brand-name">rota<span>.</span></span>
+			</a>
+			<p class="nav-label">Çalışma alanım</p>
+			<nav class="nav-list" aria-label="Panel bölümleri">
+				<button class="nav-item" type="button" data-view="dashboard" aria-current="page"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="3.5" width="7" height="4" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="10.5" width="7" height="10" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg>Genel Bakış</button>
+				<button class="nav-item" type="button" data-view="program" data-nav-student><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17M8 13h3M8 16.5h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Programım</button>
+				<button class="nav-item" type="button" data-view="dersler" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20M8 7h8M8 10.5h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Dersler</button>
+				<button class="nav-item" type="button" data-view="denemeler" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M8 3.5h8M9 3.5v5l-5 9.2A2 2 0 0 0 5.8 20.5h12.4a2 2 0 0 0 1.8-2.8L15 8.5v-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 15h10M9 11.5h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Denemeler</button>
+				<button class="nav-item" type="button" data-view="istatistikler" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m4 7 6-4 6 8 6-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>İstatistikler</button>
+				<button class="nav-item" type="button" data-view="notlar" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M6 3.5h9l4 4v13H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14.5 3.5v5h5M8 13h8M8 16.5h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Notlarım</button>
+			</nav>
+			<div class="sidebar-spacer"></div>
+			<div class="streak-box" id="weekly-streak">
+				<div class="streak-top"><span>Haftalık seri</span><strong>4 gün <span aria-hidden="true">✦</span></strong></div>
+				<div class="streak-days" aria-label="Bu hafta 4 gün çalışıldı">
+					<span class="streak-day done"><span class="streak-dot">✓</span>Pzt</span><span class="streak-day done"><span class="streak-dot">✓</span>Sal</span><span class="streak-day done"><span class="streak-dot">✓</span>Çar</span><span class="streak-day done"><span class="streak-dot">✓</span>Per</span><span class="streak-day"><span class="streak-dot">·</span>Cum</span><span class="streak-day"><span class="streak-dot">·</span>Cmt</span><span class="streak-day"><span class="streak-dot">·</span>Paz</span>
+				</div>
+			</div>
+			<a class="sidebar-help" href="mailto:destek@rota.app"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M9.6 9a2.5 2.5 0 1 1 4.3 1.7c-1.1 1.1-1.9 1.2-1.9 2.8M12 17.2v.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Yardım ve destek</a>
+		</aside>
+		<button class="sidebar-backdrop" id="sidebar-backdrop" aria-label="Menüyü kapat"></button>
+		<main class="main-area">
+			<header class="topbar">
+				<div class="topbar-left">
+					<button class="mobile-menu" id="mobile-menu" type="button" aria-label="Menüyü aç"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+					<div class="breadcrumb">Öğrenci paneli <span aria-hidden="true">/</span> <strong id="breadcrumb-title">Genel Bakış</strong></div>
+				</div>
+				<div class="top-actions">
+					<button class="icon-button" id="notification-button" type="button" aria-label="Bildirimler" title="Bildirimler"><svg viewBox="0 0 24 24" fill="none"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="notification-dot"></span></button>
+					<button class="auth-signout" id="signout-button" type="button" hidden>Çıkış</button>
+					<button class="profile-button" id="profile-button" type="button" aria-label="Kullanıcı profili" title="Profil"><span class="avatar" id="profile-initials">EY</span><span class="profile-copy"><strong id="profile-name">Öğrenci</strong><span id="profile-subtitle">YKS hazırlık</span></span><svg viewBox="0 0 24 24" fill="none"><path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+				</div>
+			</header>
+			<div class="content">
+				<section class="view active" id="view-dashboard" aria-labelledby="page-title">
+					<div class="welcome-row">
+						<div><p class="eyebrow" id="dashboard-date">11 Kasım 2026 · Çarşamba</p><h1 id="page-title">Günaydın, Ece</h1><p class="welcome-subtitle">Küçük adımlar, büyük hedefler. Bugün de rotanda kal.</p></div>
+						<div class="date-chip"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>2026–2027 YKS Dönemi</div>
+					</div>
+					<section class="panel student-coach-panel" id="student-coach-panel" hidden aria-labelledby="student-coach-title">
+						<div class="panel-header"><div><h2 class="panel-title" id="student-coach-title">Koçunu bağla</h2><p class="panel-subtitle" id="student-coach-status">Koçunun paylaştığı kodu girerek bağlantı kur.</p></div></div>
+						<form class="coach-link-form" id="coach-link-form"><label class="auth-field">Koç kodu<input name="coach_code" type="text" maxlength="10" autocomplete="off" placeholder="Örn. 2AF83B910C" required></label><button class="primary-button" type="submit">Koça bağlan</button></form>
+						<div class="linked-coach-label" id="linked-coach" hidden></div>
+					</section>
+					<div class="hero-grid">
+						<section class="focus-panel" aria-label="Günlük çalışma hedefi">
+							<div class="focus-copy"><p class="eyebrow">Bugünün odağı</p><h2>Planının %68’i tamamlandı</h2><p>Harika gidiyorsun. Bir sonraki adım: AYT Matematik’te türev tekrarını bitir.</p><button class="primary-button" type="button" data-open-view="program">Programıma git <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+							<div class="focus-progress" role="img" aria-label="Günlük planın yüzde 68'i tamamlandı"><span>68%<small>TAMAMLANDI</small></span></div>
+						</section>
+						<section class="countdown-panel" aria-label="YKS geri sayımı"><div class="countdown-heading"><span>YKS 2027 geri sayım</span><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div><div class="countdown-numbers"><div class="countdown-number"><strong>214</strong><span>GÜN</span></div><span class="countdown-separator">:</span><div class="countdown-number"><strong>08</strong><span>SAAT</span></div><span class="countdown-separator">:</span><div class="countdown-number"><strong>36</strong><span>DAKİKA</span></div></div><div class="countdown-foot"><span>TYT · 13 Haziran 2027</span><strong>Her gün bir adım</strong></div></section>
+					</div>
+					<div class="stats-row" aria-label="Genel çalışma istatistikleri">
+						<article class="stat-card"><div><span class="stat-label">Bugün çözülen</span><div class="stat-value"><span id="solved-count">86</span><small>/ 120 soru</small></div><span class="stat-note">↑ Hedefinin %72’si</span></div><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M8 4h8M8 3v3m8-3v3M6 5h12a2 2 0 0 1 2 2v13H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="m8 13 2.5 2.5L16 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></article>
+						<article class="stat-card"><div><span class="stat-label">Bu hafta çalışma</span><div class="stat-value">18<small>s 40 dk</small></div><span class="stat-note">↑ Geçen haftadan +2s</span></div><span class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span></article>
+						<article class="stat-card"><div><span class="stat-label">TYT net ortalaman</span><div class="stat-value">72,5<small>net</small></div><span class="stat-note">↑ Son denemede +3,25</span></div><span class="stat-icon coral"><svg viewBox="0 0 24 24" fill="none"><path d="m4 16 5-5 4 3 7-8M14 6h6v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></article>
+						<article class="stat-card"><div><span class="stat-label">Hedef sıralama</span><div class="stat-value">25<small>bin</small></div><span class="stat-note neutral">Sayısal · hedefin</span></div><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span></article>
+					</div>
+					<div class="lower-grid">
+						<section class="panel" aria-labelledby="tasks-title"><div class="panel-header"><div><h2 class="panel-title" id="tasks-title">Koç görevlerin</h2><p class="panel-subtitle"><span id="task-progress">2 / 4</span> görev tamamlandı</p></div><button class="text-button" type="button" data-open-view="program">Tüm program <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+							<div class="task-list" id="today-task-list">
+								<label class="task-row is-done"><input class="task-check" type="checkbox" checked><span class="task-copy"><strong>TYT Türkçe · Paragraf</strong><span>20 soru · 25 dk</span></span><span class="task-tag">Tamamlandı</span></label>
+								<label class="task-row is-done"><input class="task-check" type="checkbox" checked><span class="task-copy"><strong>AYT Matematik · Türev tekrarı</strong><span>Konu tekrarı · 40 dk</span></span><span class="task-tag">Tamamlandı</span></label>
+								<label class="task-row"><input class="task-check" type="checkbox"><span class="task-copy"><strong>TYT Fizik · Hareket</strong><span>25 soru · 35 dk</span></span><span class="task-tag blue">Sıradaki</span></label>
+								<label class="task-row"><input class="task-check" type="checkbox"><span class="task-copy"><strong>Günün kısa değerlendirmesi</strong><span>Notlarını gözden geçir · 10 dk</span></span><span class="task-tag coral">Akşam</span></label>
+							</div>
+						</section>
+						<section class="panel week-panel" aria-labelledby="week-title"><div class="panel-header"><div><h2 class="panel-title" id="week-title">Haftalık çalışma</h2><p class="panel-subtitle">Bu hafta çözdüğün soru sayısı</p></div><div class="chart-legend"><span><i class="legend-dot"></i>Bu hafta</span></div></div><div class="chart" role="img" aria-label="Pazartesi 92, Salı 108, Çarşamba 86 soru çözüldü; haftalık hedef 120"><div class="chart-day"><div class="bar-track"><span class="bar" style="height:76%"></span></div><span>Pzt</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:90%"></span></div><span>Sal</span></div><div class="chart-day"><div class="bar-track"><span class="bar today" style="height:72%"></span></div><span>Çar</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:14%"></span></div><span>Per</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:8%"></span></div><span>Cum</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:5%"></span></div><span>Cmt</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:5%"></span></div><span>Paz</span></div></div><p class="chart-note">Günlük hedef: 120 soru · Toplam: 286 soru</p></section>
+					</div>
+				<div class="student-records-grid">
+					<section class="panel"><h2 class="panel-title">Koç görevlerin</h2><p class="panel-subtitle">Koçunun sana atadığı işler</p><div class="record-list" id="student-tasks-list"><p class="record-empty">Giriş yaptıktan sonra görevlerin burada görünür.</p></div></section>
+					<section class="panel"><h2 class="panel-title">Ders programın</h2><p class="panel-subtitle">Koçunun senin için planladığı çalışmalar</p><div class="record-list" id="student-plans-list"><p class="record-empty">Henüz program eklenmedi.</p></div></section>
+					<section class="panel"><h2 class="panel-title">Deneme sonucunu ekle</h2><p class="panel-subtitle">Koçun kaydettiğin netleri görebilir.</p><form class="compact-form" id="exam-entry-form"><label class="auth-field">Deneme adı<input name="exam_name" maxlength="120" required placeholder="Örn. TYT genel deneme"></label><label class="auth-field">Tarih<input name="exam_date" type="date" required></label><label class="auth-field">TYT neti<input name="tyt_net" type="number" min="0" max="200" step="0.25"></label><label class="auth-field">AYT neti<input name="ayt_net" type="number" min="0" max="200" step="0.25"></label><button class="auth-submit" type="submit">Denemeyi kaydet</button></form><div class="record-list" id="student-exams-list"><p class="record-empty">Henüz deneme sonucu eklenmedi.</p></div></section>
+				</div>
+				</section>
+				<section class="view" id="view-coach" aria-labelledby="coach-title">
+					<div class="welcome-row"><div><p class="eyebrow">Koç çalışma alanı</p><h1 id="coach-title">Öğrencilerim</h1><p class="welcome-subtitle">Öğrencilerini takip et, görev ve program oluştur.</p></div><div class="coach-code-box"><div><span>KOÇ KODUN</span><br><strong id="coach-code-display">Yükleniyor</strong></div><button id="copy-coach-code" type="button">Kodu kopyala</button></div></div>
+					<div class="coach-layout">
+						<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Bağlı öğrenciler</h2><p class="panel-subtitle" id="coach-student-count">Öğrencilerin burada listelenir.</p></div></div><div id="coach-students-list"><p class="record-empty">Henüz bağlı öğrenci yok.</p></div></section>
+						<section class="panel">
+							<div id="coach-student-empty" class="record-empty">Öğrenci ayrıntılarını görmek için soldan bir öğrenci seç.</div>
+							<div id="coach-student-detail" hidden>
+								<div class="coach-student-summary"><h3 id="selected-student-name"></h3><p id="selected-student-meta"></p></div>
+								<div class="coach-detail-sections"><section><h4>Deneme sonuçları</h4><div class="record-list" id="coach-exam-list"></div></section><section><h4>Verdiğin görevler</h4><div class="record-list" id="coach-task-list"></div></section><section><h4>Ders programı</h4><div class="record-list" id="coach-plan-list"></div></section></div>
+								<div class="coach-forms">
+									<form id="coach-task-form"><h4>Görev / ödev ver</h4><div class="compact-form"><label class="auth-field">Ders<input name="subject" maxlength="80" required placeholder="AYT Matematik"></label><label class="auth-field">Son tarih<input name="due_date" type="date"></label><label class="auth-field">Görev başlığı<input name="title" maxlength="140" required placeholder="Türev testleri çöz"></label><label class="auth-field">Açıklama<input name="details" maxlength="500" placeholder="Sayfa veya konu bilgisi"></label><button class="auth-submit" type="submit">Görevi ata</button></div></form>
+									<form id="coach-plan-form"><h4>Ders programı yaz</h4><div class="compact-form"><label class="auth-field">Ders<input name="subject" maxlength="80" required placeholder="AYT Fizik"></label><label class="auth-field">Tarih ve saat<input name="starts_at" type="datetime-local" required></label><label class="auth-field">Çalışma başlığı<input name="title" maxlength="140" required placeholder="Elektrik konu tekrarı"></label><label class="auth-field">Not<input name="details" maxlength="500" placeholder="Hedef veya kaynak"></label><button class="auth-submit" type="submit">Programa ekle</button></div></form>
+								</div>
+							</div>
+						</section>
+					</div>
+				</section>
+				<section class="view panel secondary-view" id="view-program" aria-labelledby="program-title"><div class="secondary-heading"><div><p class="eyebrow">Ders planı</p><h2 id="program-title">Çalışma programım</h2><p>Koçunun senin için planladığı çalışmalar.</p></div></div><div class="simple-list" id="student-program-view-list"></div></section>
+				<section class="view panel secondary-view" id="view-dersler" aria-labelledby="dersler-title"><div class="secondary-heading"><div><p class="eyebrow">TYT + AYT</p><h2 id="dersler-title">Derslerim</h2><p>Konu ilerlemeni takip et, sıradaki hedefini belirle.</p></div><div class="search-wrap"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input type="search" placeholder="Ders ara..." aria-label="Derslerde ara" data-filter="ders-list"></div></div><div class="simple-list" id="ders-list"><div class="simple-row"><span class="simple-symbol">M</span><span class="simple-copy"><strong>Matematik</strong><span>AYT · 18 konunun 11’i tamamlandı</span></span><span class="simple-meta">%61 tamamlandı</span></div><div class="simple-row"><span class="simple-symbol">F</span><span class="simple-copy"><strong>Fizik</strong><span>AYT · 12 konunun 7’si tamamlandı</span></span><span class="simple-meta">%58 tamamlandı</span></div><div class="simple-row"><span class="simple-symbol">K</span><span class="simple-copy"><strong>Kimya</strong><span>AYT · 10 konunun 6’sı tamamlandı</span></span><span class="simple-meta">%60 tamamlandı</span></div><div class="simple-row"><span class="simple-symbol">T</span><span class="simple-copy"><strong>Türkçe</strong><span>TYT · 14 konunun 12’si tamamlandı</span></span><span class="simple-meta">%86 tamamlandı</span></div><div class="simple-row"><span class="simple-symbol">B</span><span class="simple-copy"><strong>Biyoloji</strong><span>AYT · 11 konunun 5’i tamamlandı</span></span><span class="simple-meta">%45 tamamlandı</span></div></div></section>
+				<section class="view panel secondary-view" id="view-denemeler" aria-labelledby="denemeler-title"><div class="secondary-heading"><div><p class="eyebrow">Ölç, değerlendir, ilerle</p><h2 id="denemeler-title">Denemelerim</h2><p>Sonuçlarını kaydet ve gelişimini gör.</p></div><button class="primary-button" type="button" data-open-view="dashboard" data-show-exam-form>+ Deneme ekle</button></div><div class="simple-list"><div class="simple-row"><span class="simple-symbol">TYT</span><span class="simple-copy"><strong>Genel TYT Denemesi · Türkiye geneli</strong><span>Türkçe 31 · Sosyal 14 · Matematik 19 · Fen 8</span></span><span class="simple-meta">72,50 net · 8 Kas</span></div><div class="simple-row"><span class="simple-symbol">AYT</span><span class="simple-copy"><strong>AYT Sayısal Denemesi · Kurum denemesi</strong><span>Matematik 21 · Fizik 8 · Kimya 7 · Biyoloji 9</span></span><span class="simple-meta">45,00 net · 1 Kas</span></div><div class="simple-row"><span class="simple-symbol">TYT</span><span class="simple-copy"><strong>Genel TYT Denemesi · Türkiye geneli</strong><span>Türkçe 29 · Sosyal 13 · Matematik 17 · Fen 7</span></span><span class="simple-meta">66,25 net · 25 Eki</span></div></div></section>
+				<section class="view panel secondary-view" id="view-istatistikler" aria-labelledby="istatistikler-title"><div class="secondary-heading"><div><p class="eyebrow">Düzenli emek, görünür gelişim</p><h2 id="istatistikler-title">İstatistiklerim</h2><p>Çalışma ritmin ve deneme performansının özeti.</p></div></div><div class="stats-row" style="margin-top:0"><article class="stat-card"><div><span class="stat-label">Toplam çalışma</span><div class="stat-value">246<small>saat</small></div><span class="stat-note">Bu dönem</span></div></article><article class="stat-card"><div><span class="stat-label">Toplam soru</span><div class="stat-value">8.420</div><span class="stat-note">Tüm dersler</span></div></article><article class="stat-card"><div><span class="stat-label">TYT net değişimi</span><div class="stat-value">+12,5</div><span class="stat-note">Son 8 hafta</span></div></article><article class="stat-card"><div><span class="stat-label">En verimli ders</span><div class="stat-value">Türkçe</div><span class="stat-note">%86 konu ilerlemesi</span></div></article></div></section>
+				<section class="view panel secondary-view" id="view-notlar" aria-labelledby="notlar-title"><div class="secondary-heading"><div><p class="eyebrow">Kendin için kaydet</p><h2 id="notlar-title">Notlarım</h2><p>Önemli hatırlatmalarını ve çalışma notlarını burada tut.</p></div><div class="search-wrap"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input type="search" placeholder="Notlarda ara..." aria-label="Notlarda ara" data-filter="not-list"></div></div><div class="simple-list" id="not-list"><div class="simple-row"><span class="simple-symbol">✎</span><span class="simple-copy"><strong>Türev · kritik noktalar</strong><span>Artan-azalan aralık sorularında önce türevin işaret tablosunu kur.</span></span><span class="simple-meta">Bugün</span></div><div class="simple-row"><span class="simple-symbol">✎</span><span class="simple-copy"><strong>Deneme analizi</strong><span>Problemlerde süreyi daha dengeli kullan; takıldığın soruyu işaretleyip geç.</span></span><span class="simple-meta">8 Kas</span></div><div class="simple-row"><span class="simple-symbol">✎</span><span class="simple-copy"><strong>Haftalık hedef</strong><span>Bu hafta AYT Fizik’te elektrik konusunu tamamla.</span></span><span class="simple-meta">5 Kas</span></div></div></section>
+				<footer style="padding-top:20px;color:#929b95;font-size:10px">Bugün kendin için yaptığın her şey, yarınki hedefine biraz daha yakın.</footer>
+			</div>
+		</main>
+	</div>
+	<div class="toast" id="toast" role="status" aria-live="polite"></div>
+	</div>
+	<script>
+		const viewNames = { dashboard: "Genel Bakış", program: "Programım", dersler: "Dersler", denemeler: "Denemeler", istatistikler: "İstatistikler", notlar: "Notlarım" };
+		const navItems = [...document.querySelectorAll(".nav-item[data-view]")];
+		const views = [...document.querySelectorAll(".view")];
+		const welcomeScreen = document.querySelector("#welcome-screen");
+		const dashboardApp = document.querySelector("#dashboard-app");
+		const breadcrumbTitle = document.querySelector("#breadcrumb-title");
+		const sidebar = document.querySelector("#sidebar");
+		const backdrop = document.querySelector("#sidebar-backdrop");
+		const toast = document.querySelector("#toast");
+		let toastTimer;
+
+		function showToast(message) {
+			toast.textContent = message;
+			toast.classList.add("show");
+			clearTimeout(toastTimer);
+			toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+		}
+
+		function openView(name) {
+			if (!viewNames[name]) return;
+			const coachHome = name === "dashboard" && window.rotaProfile?.role === "coach";
+			const activeViewId = coachHome ? "view-coach" : `view-${name}`;
+			const pageName = coachHome ? "Öğrencilerim" : viewNames[name];
+			navItems.forEach((item) => {
+				if (item.dataset.view === name) item.setAttribute("aria-current", "page");
+				else item.removeAttribute("aria-current");
+			});
+			views.forEach((view) => view.classList.toggle("active", view.id === activeViewId));
+			breadcrumbTitle.textContent = pageName;
+			document.title = `${pageName} | Rota`;
+			history.replaceState(null, "", `#${name === "dashboard" ? "genel-bakis" : name}`);
+			closeMenu();
+		}
+		window.rotaOpenView = openView;
+		window.rotaShowToast = showToast;
+		window.rotaEnterApp = (profile) => {
+			window.rotaProfile = profile;
+			welcomeScreen.hidden = true;
+			dashboardApp.hidden = false;
+			const isCoach = profile.role === "coach";
+			document.querySelectorAll("[data-nav-student]").forEach((item) => { item.hidden = isCoach; });
+			document.querySelector("#weekly-streak").hidden = isCoach;
+			document.querySelector("#student-coach-panel").hidden = isCoach;
+			const dashboardLabel = [...document.querySelector('[data-view="dashboard"]').childNodes].find((node) => node.nodeType === Node.TEXT_NODE);
+			if (dashboardLabel) dashboardLabel.textContent = isCoach ? "Öğrencilerim" : "Genel Bakış";
+			document.querySelector("#signout-button").hidden = false;
+			openView("dashboard");
+		};
+		window.rotaShowLanding = () => {
+			window.rotaProfile = null;
+			dashboardApp.hidden = true;
+			welcomeScreen.hidden = false;
+			document.querySelector("#signout-button").hidden = true;
+		};
+
+		function enterDashboard() {
+			welcomeScreen.hidden = true;
+			dashboardApp.hidden = false;
+			window.scrollTo(0, 0);
+			openView("dashboard");
+		}
+
+		function closeMenu() {
+			sidebar.classList.remove("open");
+			backdrop.classList.remove("show");
+		}
+
+		navItems.forEach((item) => item.addEventListener("click", () => openView(item.dataset.view)));
+		const authOverlay = document.querySelector("#auth-overlay");
+		function setAuthMode(mode) {
+			const isLogin = mode === "login";
+			document.querySelector("#login-form").hidden = !isLogin;
+			document.querySelector("#signup-form").hidden = isLogin;
+			document.querySelector("#auth-title").textContent = isLogin ? "Tekrar hoş geldin" : "Hesabını oluştur";
+			document.querySelector("#auth-description").textContent = isLogin ? "Rota hesabına giriş yap." : "Öğrenci veya koç olarak çalışma alanına katıl.";
+			document.querySelectorAll("[data-auth-mode]").forEach((tab) => tab.setAttribute("aria-pressed", String(tab.dataset.authMode === mode)));
+			document.querySelector("#auth-message").hidden = true;
+		}
+		document.querySelectorAll("[data-open-auth]").forEach((button) => button.addEventListener("click", () => {
+			setAuthMode(button.dataset.openAuth);
+			authOverlay.hidden = false;
+			document.querySelector(isAuthLogin(button.dataset.openAuth) ? "#login-form input" : "#signup-form input").focus();
+		}));
+		function isAuthLogin(mode) { return mode === "login"; }
+		document.querySelectorAll("[data-auth-mode]").forEach((tab) => tab.addEventListener("click", () => setAuthMode(tab.dataset.authMode)));
+		document.querySelector("#auth-close").addEventListener("click", () => { authOverlay.hidden = true; });
+		authOverlay.addEventListener("click", (event) => { if (event.target === authOverlay) authOverlay.hidden = true; });
+		document.querySelector("#signup-role").addEventListener("change", (event) => {
+			const isCoach = event.target.value === "coach";
+			document.querySelector("#student-signup-fields").hidden = isCoach;
+			document.querySelector("#coach-signup-fields").hidden = !isCoach;
+			document.querySelectorAll("#student-signup-fields input, #student-signup-fields select").forEach((field) => { field.disabled = isCoach; });
+			document.querySelectorAll("#coach-signup-fields input, #coach-signup-fields select").forEach((field) => { field.disabled = !isCoach; });
+		});
+		document.querySelectorAll("[data-open-view]").forEach((button) => button.addEventListener("click", () => openView(button.dataset.openView)));
+		document.querySelectorAll("[data-toast]").forEach((button) => button.addEventListener("click", () => showToast(button.dataset.toast)));
+		document.querySelector("#mobile-menu").addEventListener("click", () => {
+			sidebar.classList.add("open");
+			backdrop.classList.add("show");
+		});
+		backdrop.addEventListener("click", closeMenu);
+		document.querySelector("#notification-button").addEventListener("click", () => showToast("Yeni bildirimin yok. Her şey yolunda!"));
+		document.querySelector("#profile-button").addEventListener("click", () => showToast("Profil ayarları yakında burada."));
+
+		const taskChecks = [...document.querySelectorAll(".task-check")];
+		function updateTasks() {
+			const complete = taskChecks.filter((check) => check.checked).length;
+			document.querySelector("#task-progress").textContent = complete;
+			document.querySelector(".focus-copy h2").textContent = `Planının %${Math.round((complete / taskChecks.length) * 100)}’i tamamlandı`;
+			document.querySelector(".focus-progress").style.background = `conic-gradient(var(--sidebar) 0 ${Math.round((complete / taskChecks.length) * 100)}%, rgba(51,91,50,.16) ${Math.round((complete / taskChecks.length) * 100)}% 100%)`;
+			document.querySelector(".focus-progress").setAttribute("aria-label", `Günlük planın yüzde ${Math.round((complete / taskChecks.length) * 100)}'i tamamlandı`);
+			document.querySelector(".focus-progress span").innerHTML = `${Math.round((complete / taskChecks.length) * 100)}%<small>TAMAMLANDI</small>`;
+			taskChecks.forEach((check) => check.closest(".task-row").classList.toggle("is-done", check.checked));
+		}
+		taskChecks.forEach((check) => check.addEventListener("change", updateTasks));
+
+		document.querySelectorAll("[data-filter]").forEach((input) => input.addEventListener("input", () => {
+			const list = document.getElementById(input.dataset.filter);
+			const query = input.value.trim().toLocaleLowerCase("tr");
+			list.querySelectorAll(".simple-row").forEach((row) => {
+				row.hidden = !row.textContent.toLocaleLowerCase("tr").includes(query);
+			});
+		}));
+
+	</script>
+	<script type="module" src="supabase/app.js"></script>
+</body>
+</html>

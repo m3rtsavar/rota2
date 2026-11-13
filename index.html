@@ -165,6 +165,8 @@
 		.toast.show { opacity: 1; transform: translateY(0); }
 		.mobile-menu { display: none; }
 		.dashboard-app[hidden], .welcome-screen[hidden] { display: none !important; }
+		body.session-checking #welcome-screen { visibility: hidden; }
+		body.session-checking::before { content: "Rota yükleniyor..."; position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; background: #f4f5f0; color: #536159; font-size: 13px; }
 		.welcome-screen { min-height: 100vh; background: #f4f5f0; }
 		.welcome-header { position: absolute; z-index: 2; top: 0; left: 0; width: 100%; height: 78px; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(22px, 6vw, 88px); color: white; }
 		.welcome-brand { display: inline-flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
@@ -291,6 +293,7 @@
 		.welcome-login-note { color: #536159; }
 		.welcome-scroll { display: none; }
 		.welcome-preview { width: 100%; max-width: 570px; justify-self: end; overflow: hidden; padding: 19px 20px 14px; border: 1px solid #dfe5dc; border-radius: 9px; background: #fff; box-shadow: 0 18px 44px rgba(37, 53, 42, .11); animation: preview-in .7s .08s ease both; }
+		.preview-message { margin: 14px 0 2px; color: #536159; font-size: 12px; line-height: 1.65; }
 		.preview-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 15px; border-bottom: 1px solid #edf0eb; }
 		.preview-heading { display: grid; gap: 5px; }
 		.preview-kicker { color: #7d8983; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
@@ -377,6 +380,106 @@
 		}
 		.auth-signout { min-height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 5px; background: #fff; color: #536159; font-size: 10px; cursor: pointer; }
 		.auth-signout[hidden] { display: none !important; }
+		.theme-toggle { position: fixed; z-index: 15; left: 16px; bottom: 16px; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 13px; border: 1px solid #53675c; border-radius: 22px; background: var(--sidebar); color: #fff; box-shadow: 0 4px 14px #14271e30; font-size: 11px; font-weight: 700; cursor: pointer; }
+		.theme-toggle svg { width: 16px; height: 16px; }
+		.dashboard-app[data-theme="dark"] { color-scheme: dark; --ink: #e8eee9; --muted: #a4b1a9; --line: #3a4b42; --paper: #26382f; --canvas: #19271f; }
+		.dashboard-app[data-theme="light"] { color-scheme: light; }
+		.dashboard-app[data-theme="dark"] .app-shell,
+		.dashboard-app[data-theme="dark"] .main-area { background: var(--canvas); color: var(--ink); }
+		.dashboard-app[data-theme="dark"] .topbar,
+		.dashboard-app[data-theme="dark"] .icon-button,
+		.dashboard-app[data-theme="dark"] .date-chip,
+		.dashboard-app[data-theme="dark"] .coach-code-box,
+		.dashboard-app[data-theme="dark"] .coach-code-box button,
+		.dashboard-app[data-theme="dark"] .coach-student-button,
+		.dashboard-app[data-theme="dark"] .auth-field input,
+		.dashboard-app[data-theme="dark"] .auth-field select,
+		.dashboard-app[data-theme="dark"] .auth-field textarea,
+		.dashboard-app[data-theme="dark"] .book-choice { background: #26382f; color: var(--ink); }
+		.dashboard-app[data-theme="dark"] .task-copy strong,
+		.dashboard-app[data-theme="dark"] .coach-student-button strong,
+		.dashboard-app[data-theme="dark"] .simple-copy strong { color: #e8eee9; }
+		.dashboard-app[data-theme="dark"] .task-row,
+		.dashboard-app[data-theme="dark"] .record-row,
+		.dashboard-app[data-theme="dark"] .coach-student-button,
+		.dashboard-app[data-theme="dark"] .coach-student-summary { border-color: var(--line); }
+		.dashboard-app[data-theme="dark"] .chart { background-image: repeating-linear-gradient(to top, transparent 0, transparent 32px, #35463d 33px, transparent 34px); }
+		.dashboard-app[data-theme="dark"] .bar-track,
+		.dashboard-app[data-theme="dark"] .calendar-day { background-color: #304239; }
+		.dashboard-app[data-theme="dark"] .auth-field { color: #c9d4cd; }
+		.dashboard-app[data-theme="dark"] .calendar-day.outside-month { color: #718078; }
+		.dashboard-app[data-theme="dark"] .calendar-day[aria-pressed="true"] { background: var(--green); color: #20332c; }
+		.dashboard-app[data-theme="dark"] .exam-subject-row { border-color: var(--line); }
+		.student-records-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 15px; }
+		.student-records-grid > .panel { padding: 17px 18px; }
+		.record-list { display: grid; }
+		.record-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; border-top: 1px solid #eff1ed; }
+		.record-row strong { display: block; font-size: 11px; }
+		.record-row span { display: block; margin-top: 4px; color: #859088; font-size: 9px; }
+		.record-empty { padding: 15px 0 4px; color: #859088; font-size: 10px; }
+		.compact-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 12px 0; }
+		.compact-form .auth-field { font-size: 9px; }
+		.compact-form .auth-field input, .compact-form .auth-field select, .compact-form .auth-field textarea { height: 34px; font-size: 10px; }
+		.compact-form .auth-field textarea { min-height: 60px; height: auto; padding: 8px 11px; resize: vertical; }
+		.compact-form .auth-submit { grid-column: 1 / -1; min-height: 35px; margin: 0; }
+		.auth-field textarea { width: 100%; padding: 9px 11px; border: 1px solid #dfe5dd; border-radius: 5px; outline: none; background: #fff; color: var(--ink); font: inherit; font-size: 11px; }
+		.auth-field textarea:focus { border-color: #9cbe80; box-shadow: 0 0 0 3px #b7ee7635; }
+		.error-upload-form { display: grid; gap: 10px; max-width: 560px; margin: 10px 0 20px; }
+		.error-upload-form input[type="file"] { height: auto; padding: 8px; }
+		.error-card-grid, .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+		.error-card, .book-card { overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
+		.error-card img, .book-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #e8ece6; }
+		.error-card-copy, .book-card-copy { display: grid; gap: 5px; padding: 11px; }
+		.error-card-copy strong, .book-card-copy strong { font-size: 11px; }
+		.error-card-copy span, .book-card-copy span { color: var(--muted); font-size: 9px; }
+		.card-actions { display: flex; justify-content: flex-end; padding: 0 11px 10px; }
+		.danger-button { border: 0; background: transparent; color: #bd5540; font-size: 10px; cursor: pointer; }
+		.flashcard-stage { display: grid; grid-template-columns: 44px minmax(0, 720px) 44px; align-items: center; justify-content: center; gap: 16px; margin: 20px auto; }
+		.flashcard-stage[hidden] { display: none !important; }
+		.flashcard { min-height: 360px; display: grid; place-items: center; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
+		.flashcard img { max-width: 100%; max-height: 62vh; object-fit: contain; }
+		.flashcard-arrow { width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 50%; background: var(--paper); font-size: 20px; cursor: pointer; }
+		.flashcard-meta { text-align: center; color: var(--muted); font-size: 11px; }
+		.calendar-panel { margin-top: 17px; padding: 16px; }
+		.calendar-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+		.calendar-heading strong { font: 700 14px "Manrope", sans-serif; }
+		.calendar-heading button { width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); cursor: pointer; }
+		.calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+		.calendar-weekday { padding: 5px 0; color: var(--muted); text-align: center; font-size: 9px; }
+		.calendar-day { position: relative; min-height: 36px; border: 0; border-radius: 6px; background: #f2f5ef; cursor: pointer; font-size: 10px; }
+		.calendar-day.outside-month { color: #a6b0a9; }
+		.calendar-day[aria-pressed="true"] { background: var(--sidebar); color: #fff; font-weight: 700; }
+		.calendar-day.has-plans::after { position: absolute; bottom: 4px; left: calc(50% - 3px); width: 5px; height: 5px; border-radius: 50%; background: var(--coral); content: ""; }
+		.calendar-day[aria-pressed="true"].has-plans::after { background: var(--green); }
+		.day-task-list { display: grid; gap: 10px; margin-top: 12px; }
+		.day-task-card { padding: 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+		.day-task-card > strong { display: block; font-size: 12px; }
+		.day-task-card > p { margin: 5px 0; color: var(--muted); font-size: 10px; }
+		.task-result-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+		.task-result-form .auth-field input { height: 34px; }
+		.task-result-form .auth-submit { grid-column: 1 / -1; min-height: 34px; margin: 0; }
+		.result-summary { color: #527347; font-size: 10px; font-weight: 700; }
+		.coach-book-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 7px; margin: 8px 0; }
+		.book-choice { display: grid; gap: 4px; padding: 5px; border: 1px solid var(--line); border-radius: 6px; background: #fff; text-align: left; cursor: pointer; }
+		.book-choice[aria-pressed="true"] { outline: 2px solid #8fc66a; }
+		.book-choice img { width: 100%; height: 52px; border-radius: 3px; object-fit: cover; }
+		.book-choice span { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+		.exam-subject-grid { display: grid; gap: 4px; margin: 12px 0; }
+		.exam-subject-heading, .exam-subject-row { display: grid; grid-template-columns: minmax(100px, 1fr) repeat(2, minmax(60px, .55fr)); align-items: center; gap: 7px; }
+		.exam-subject-heading { color: var(--muted); font-size: 9px; }
+		.exam-subject-row { padding: 5px 0; border-top: 1px solid #eff1ed; font-size: 10px; }
+		.exam-subject-row input { width: 100%; height: 30px !important; padding: 0 6px !important; }
+		@media (max-width: 700px) {
+			.student-records-grid { grid-template-columns: 1fr; }
+			.student-coach-panel { padding: 14px; }
+			.coach-link-form { align-items: stretch; flex-direction: column; }
+			.coach-link-form input { max-width: none; }
+			.student-records-grid > .panel, .coach-layout > .panel { padding: 14px; }
+			.flashcard-stage { grid-template-columns: 34px minmax(0, 1fr) 34px; gap: 7px; }
+			.flashcard { min-height: 260px; padding: 10px; }
+			.flashcard-arrow { width: 34px; height: 34px; }
+			.theme-toggle { left: 10px; bottom: 10px; }
+		}
 		.student-coach-panel { margin-bottom: 16px; padding: 15px 18px; }
 		.student-coach-panel .panel-header { padding: 0 0 10px; }
 		.coach-link-form { display: flex; align-items: end; gap: 9px; }
@@ -429,7 +532,7 @@
 		}
 	</style>
 </head>
-<body>
+<body class="session-checking">
 	<main class="welcome-screen" id="welcome-screen">
 		<header class="welcome-header">
 			<a class="welcome-brand" href="#top" aria-label="Rota ana sayfa">
@@ -453,13 +556,9 @@
 					</div>
 					<p class="welcome-login-note" id="welcome-login-note" role="status" aria-live="polite" hidden>Giriş ve kayıt, Supabase bağlantısını kurduğumuzda burada açılacak.</p>
 				</div>
-				<aside class="welcome-preview" aria-label="Örnek öğrenci çalışma grafiği">
-					<div class="preview-header"><div class="preview-heading"><span class="preview-kicker">ÖRNEK PANEL</span><strong>Haftalık ilerleme</strong></div><span class="preview-avatar" aria-label="Örnek öğrenci">EY</span></div>
-					<div class="preview-metrics"><div class="preview-metric"><span class="preview-metric-label">TYT net ortalaması</span><strong class="preview-metric-value">72,5<small>net</small></strong><span class="preview-metric-change">+12,5 · 8 haftada</span></div><div class="preview-metric"><span class="preview-metric-label">Bu hafta çalışma</span><strong class="preview-metric-value">18<small>s 40 dk</small></strong><span class="preview-metric-change">4 günlük çalışma serisi</span></div></div>
-					<div class="preview-chart-heading"><strong>Deneme netleri</strong><span>Son 8 hafta</span></div>
-					<div class="preview-chart"><svg viewBox="0 0 420 150" preserveAspectRatio="none" role="img" aria-label="Örnek veride TYT netlerinin sekiz haftalık yükselişi"><path class="trend-area" d="M12 128 C42 124 54 108 72 111 S112 91 132 96 S172 76 192 82 S232 60 252 67 S292 55 312 46 S352 39 372 29 S397 22 408 16 L408 146 L12 146 Z"/><path class="trend-line" d="M12 128 C42 124 54 108 72 111 S112 91 132 96 S172 76 192 82 S232 60 252 67 S292 55 312 46 S352 39 372 29 S397 22 408 16"/><circle class="trend-point" cx="408" cy="16" r="5"/></svg></div>
-					<div class="preview-chart-labels" aria-hidden="true"><span>1. hafta</span><span>3. hafta</span><span>5. hafta</span><span>8. hafta</span></div>
-					<div class="preview-footer"><span>Örnek çalışma senaryosu</span><strong>Gelişimini takip et <span aria-hidden="true">↗</span></strong></div>
+				<aside class="welcome-preview" aria-label="Rota hakkında">
+					<div class="preview-header"><div class="preview-heading"><span class="preview-kicker">KİŞİSEL ÇALIŞMA ALANIN</span><strong>Verilerin, senin rotan.</strong></div></div>
+					<p class="preview-message">Deneme sonuçların, çalışma planın ve hata defterin hesabına kaydedilir. Panelindeki özetler yalnızca senin ve bağlı koçunun girdiği bilgilerden oluşur.</p>
 				</aside>
 			</div>
 			<div class="welcome-scroll" aria-hidden="true"><span></span>ROTA’NI KEŞFET</div>
@@ -476,9 +575,6 @@
 					<article class="welcome-pillar"><span class="pillar-number">03</span><div><h3>İlerle</h3><p>Gelişimini izleyip sonraki hedefini daha net belirle.</p></div></article>
 				</div>
 			</div>
-		</section>
-		<section class="welcome-proof" aria-label="Örnek öğrenci ilerlemesi">
-			<div class="welcome-proof-inner"><div class="proof-copy"><span class="proof-kicker">ÖRNEK KULLANIM SENARYOSU</span><h2>Düzenli çalış, ilerlemeni net gör.</h2><p>Bu değerler tanıtım amaçlı demo verisidir; gerçek kullanıcı sonucu veya başarı garantisi değildir. Gerçek deneyimler oluştukça bu alanda paylaşılabilir.</p></div><div class="proof-result"><strong>60,0</strong><span aria-hidden="true">→</span><div><strong>72,5</strong><br><small>TYT neti · 8 haftalık örnek</small></div></div></div>
 		</section>
 		<footer class="welcome-footer"><span>rota. · YKS hazırlık alanın</span><span>2026–2027</span></footer>
 	</main>
@@ -514,18 +610,16 @@
 			<nav class="nav-list" aria-label="Panel bölümleri">
 				<button class="nav-item" type="button" data-view="dashboard" aria-current="page"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="3.5" width="7" height="4" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="13.5" y="10.5" width="7" height="10" rx="1.5" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.7"/></svg>Genel Bakış</button>
 				<button class="nav-item" type="button" data-view="program" data-nav-student><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17M8 13h3M8 16.5h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Programım</button>
+				<button class="nav-item" type="button" data-view="aliskanliklar" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5v3m0 11v3m8.5-8.5h-3m-11 0h-3m14.01-6.01-2.12 2.12m-7.78 7.78-2.12 2.12m12.02 0-2.12-2.12m-7.78-7.78L6.49 6.99" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/></svg>Alışkanlıklar</button>
 				<button class="nav-item" type="button" data-view="dersler" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20M8 7h8M8 10.5h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Dersler</button>
 				<button class="nav-item" type="button" data-view="denemeler" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M8 3.5h8M9 3.5v5l-5 9.2A2 2 0 0 0 5.8 20.5h12.4a2 2 0 0 0 1.8-2.8L15 8.5v-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 15h10M9 11.5h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Denemeler</button>
+				<button class="nav-item" type="button" data-view="hata-defteri" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M6 3.5h9l4 4v13H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7"/><path d="M14.5 3.5v5h5M8 13h8m-8 3.5h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m9 9 2 2m0-2-2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Hata Defteri</button>
+				<button class="nav-item" type="button" data-view="kitaplarim" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21V5.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20M8 7h8M8 10.5h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Kitaplarım</button>
 				<button class="nav-item" type="button" data-view="istatistikler" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m4 7 6-4 6 8 6-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>İstatistikler</button>
 				<button class="nav-item" type="button" data-view="notlar" data-nav-student><svg viewBox="0 0 24 24" fill="none"><path d="M6 3.5h9l4 4v13H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14.5 3.5v5h5M8 13h8M8 16.5h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Notlarım</button>
 			</nav>
 			<div class="sidebar-spacer"></div>
-			<div class="streak-box" id="weekly-streak">
-				<div class="streak-top"><span>Haftalık seri</span><strong>4 gün <span aria-hidden="true">✦</span></strong></div>
-				<div class="streak-days" aria-label="Bu hafta 4 gün çalışıldı">
-					<span class="streak-day done"><span class="streak-dot">✓</span>Pzt</span><span class="streak-day done"><span class="streak-dot">✓</span>Sal</span><span class="streak-day done"><span class="streak-dot">✓</span>Çar</span><span class="streak-day done"><span class="streak-dot">✓</span>Per</span><span class="streak-day"><span class="streak-dot">·</span>Cum</span><span class="streak-day"><span class="streak-dot">·</span>Cmt</span><span class="streak-day"><span class="streak-dot">·</span>Paz</span>
-				</div>
-			</div>
+			<div class="streak-box" id="weekly-streak" hidden></div>
 			<a class="sidebar-help" href="mailto:destek@rota.app"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M9.6 9a2.5 2.5 0 1 1 4.3 1.7c-1.1 1.1-1.9 1.2-1.9 2.8M12 17.2v.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>Yardım ve destek</a>
 		</aside>
 		<button class="sidebar-backdrop" id="sidebar-backdrop" aria-label="Menüyü kapat"></button>
@@ -544,7 +638,7 @@
 			<div class="content">
 				<section class="view active" id="view-dashboard" aria-labelledby="page-title">
 					<div class="welcome-row">
-						<div><p class="eyebrow" id="dashboard-date">11 Kasım 2026 · Çarşamba</p><h1 id="page-title">Günaydın, Ece</h1><p class="welcome-subtitle">Küçük adımlar, büyük hedefler. Bugün de rotanda kal.</p></div>
+						<div><p class="eyebrow" id="dashboard-date"></p><h1 id="page-title">Öğrenci paneli</h1><p class="welcome-subtitle">Kendi çalışma kayıtların ve koçunun planları burada.</p></div>
 						<div class="date-chip"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>2026–2027 YKS Dönemi</div>
 					</div>
 					<section class="panel student-coach-panel" id="student-coach-panel" hidden aria-labelledby="student-coach-title">
@@ -554,64 +648,67 @@
 					</section>
 					<div class="hero-grid">
 						<section class="focus-panel" aria-label="Günlük çalışma hedefi">
-							<div class="focus-copy"><p class="eyebrow">Bugünün odağı</p><h2>Planının %68’i tamamlandı</h2><p>Harika gidiyorsun. Bir sonraki adım: AYT Matematik’te türev tekrarını bitir.</p><button class="primary-button" type="button" data-open-view="program">Programıma git <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-							<div class="focus-progress" role="img" aria-label="Günlük planın yüzde 68'i tamamlandı"><span>68%<small>TAMAMLANDI</small></span></div>
+							<div class="focus-copy"><p class="eyebrow">Bugünün odağı</p><h2>Çalışma planın</h2><p class="dashboard-focus-copy">Koçunun eklediği program ve alışkanlıklar burada görünür.</p><button class="primary-button" type="button" data-open-view="program">Programıma git <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+							<div class="focus-progress" role="img" aria-label="Henüz çalışma yok"><span>0<small>ÇALIŞMA</small></span></div>
 						</section>
-						<section class="countdown-panel" aria-label="YKS geri sayımı"><div class="countdown-heading"><span>YKS 2027 geri sayım</span><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div><div class="countdown-numbers"><div class="countdown-number"><strong>214</strong><span>GÜN</span></div><span class="countdown-separator">:</span><div class="countdown-number"><strong>08</strong><span>SAAT</span></div><span class="countdown-separator">:</span><div class="countdown-number"><strong>36</strong><span>DAKİKA</span></div></div><div class="countdown-foot"><span>TYT · 13 Haziran 2027</span><strong>Her gün bir adım</strong></div></section>
+						<section class="countdown-panel" aria-label="Deneme özeti"><div class="countdown-heading"><span>Deneme özeti</span></div><div class="countdown-numbers"><div class="countdown-number"><strong id="dashboard-exam-count">0</strong><span>KAYITLI DENEME</span></div></div><div class="countdown-foot"><span>Güncel TYT neti</span><strong id="dashboard-tyt-net">-</strong></div></section>
 					</div>
 					<div class="stats-row" aria-label="Genel çalışma istatistikleri">
-						<article class="stat-card"><div><span class="stat-label">Bugün çözülen</span><div class="stat-value"><span id="solved-count">86</span><small>/ 120 soru</small></div><span class="stat-note">↑ Hedefinin %72’si</span></div><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M8 4h8M8 3v3m8-3v3M6 5h12a2 2 0 0 1 2 2v13H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="m8 13 2.5 2.5L16 10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></article>
-						<article class="stat-card"><div><span class="stat-label">Bu hafta çalışma</span><div class="stat-value">18<small>s 40 dk</small></div><span class="stat-note">↑ Geçen haftadan +2s</span></div><span class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span></article>
-						<article class="stat-card"><div><span class="stat-label">TYT net ortalaman</span><div class="stat-value">72,5<small>net</small></div><span class="stat-note">↑ Son denemede +3,25</span></div><span class="stat-icon coral"><svg viewBox="0 0 24 24" fill="none"><path d="m4 16 5-5 4 3 7-8M14 6h6v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span></article>
-						<article class="stat-card"><div><span class="stat-label">Hedef sıralama</span><div class="stat-value">25<small>bin</small></div><span class="stat-note neutral">Sayısal · hedefin</span></div><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></span></article>
+						<article class="stat-card"><div><span class="stat-label">Günlük çalışmalar</span><div class="stat-value" data-dashboard-stat="tasks">0</div><span class="stat-note" data-dashboard-note="tasks">Henüz çalışma yok</span></div></article>
+						<article class="stat-card"><div><span class="stat-label">Tamamlanan çalışma</span><div class="stat-value" data-dashboard-stat="completed">0</div><span class="stat-note" data-dashboard-note="completed">Kayıtlı çalışmalardan</span></div></article>
+						<article class="stat-card"><div><span class="stat-label">TYT deneme ortalaması</span><div class="stat-value" data-dashboard-stat="tyt">-</div><span class="stat-note" data-dashboard-note="tyt">Henüz deneme yok</span></div></article>
+						<article class="stat-card"><div><span class="stat-label">Hata defteri</span><div class="stat-value" data-dashboard-stat="errors">0</div><span class="stat-note" data-dashboard-note="errors">Kaydedilen soru</span></div></article>
 					</div>
 					<div class="lower-grid">
-						<section class="panel" aria-labelledby="tasks-title"><div class="panel-header"><div><h2 class="panel-title" id="tasks-title">Koç görevlerin</h2><p class="panel-subtitle"><span id="task-progress">2 / 4</span> görev tamamlandı</p></div><button class="text-button" type="button" data-open-view="program">Tüm program <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
-							<div class="task-list" id="today-task-list">
-								<label class="task-row is-done"><input class="task-check" type="checkbox" checked><span class="task-copy"><strong>TYT Türkçe · Paragraf</strong><span>20 soru · 25 dk</span></span><span class="task-tag">Tamamlandı</span></label>
-								<label class="task-row is-done"><input class="task-check" type="checkbox" checked><span class="task-copy"><strong>AYT Matematik · Türev tekrarı</strong><span>Konu tekrarı · 40 dk</span></span><span class="task-tag">Tamamlandı</span></label>
-								<label class="task-row"><input class="task-check" type="checkbox"><span class="task-copy"><strong>TYT Fizik · Hareket</strong><span>25 soru · 35 dk</span></span><span class="task-tag blue">Sıradaki</span></label>
-								<label class="task-row"><input class="task-check" type="checkbox"><span class="task-copy"><strong>Günün kısa değerlendirmesi</strong><span>Notlarını gözden geçir · 10 dk</span></span><span class="task-tag coral">Akşam</span></label>
-							</div>
+						<section class="panel" aria-labelledby="tasks-title"><div class="panel-header"><div><h2 class="panel-title" id="tasks-title">Bugünün çalışmaları</h2><p class="panel-subtitle"><span id="task-progress">0 / 0</span> kayıt girildi</p></div><button class="text-button" type="button" data-open-view="program">Takvimi aç <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+							<div class="task-list" id="today-task-list"><p class="record-empty">Bugün için çalışma yok.</p></div>
 						</section>
-						<section class="panel week-panel" aria-labelledby="week-title"><div class="panel-header"><div><h2 class="panel-title" id="week-title">Haftalık çalışma</h2><p class="panel-subtitle">Bu hafta çözdüğün soru sayısı</p></div><div class="chart-legend"><span><i class="legend-dot"></i>Bu hafta</span></div></div><div class="chart" role="img" aria-label="Pazartesi 92, Salı 108, Çarşamba 86 soru çözüldü; haftalık hedef 120"><div class="chart-day"><div class="bar-track"><span class="bar" style="height:76%"></span></div><span>Pzt</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:90%"></span></div><span>Sal</span></div><div class="chart-day"><div class="bar-track"><span class="bar today" style="height:72%"></span></div><span>Çar</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:14%"></span></div><span>Per</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:8%"></span></div><span>Cum</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:5%"></span></div><span>Cmt</span></div><div class="chart-day"><div class="bar-track"><span class="bar" style="height:5%"></span></div><span>Paz</span></div></div><p class="chart-note">Günlük hedef: 120 soru · Toplam: 286 soru</p></section>
+						<section class="panel week-panel" aria-labelledby="week-title"><div class="panel-header"><div><h2 class="panel-title" id="week-title">Deneme netlerin</h2><p class="panel-subtitle">TYT deneme sonuçlarının seyri</p></div></div><div class="chart" role="img" aria-label="Deneme netleri henüz yok"></div><p class="chart-note">Deneme ekledikçe grafiğin burada oluşur.</p></section>
 					</div>
 				<div class="student-records-grid">
-					<section class="panel"><h2 class="panel-title">Koç görevlerin</h2><p class="panel-subtitle">Koçunun sana atadığı işler</p><div class="record-list" id="student-tasks-list"><p class="record-empty">Giriş yaptıktan sonra görevlerin burada görünür.</p></div></section>
-					<section class="panel"><h2 class="panel-title">Ders programın</h2><p class="panel-subtitle">Koçunun senin için planladığı çalışmalar</p><div class="record-list" id="student-plans-list"><p class="record-empty">Henüz program eklenmedi.</p></div></section>
-					<section class="panel"><h2 class="panel-title">Deneme sonucunu ekle</h2><p class="panel-subtitle">Koçun kaydettiğin netleri görebilir.</p><form class="compact-form" id="exam-entry-form"><label class="auth-field">Deneme adı<input name="exam_name" maxlength="120" required placeholder="Örn. TYT genel deneme"></label><label class="auth-field">Tarih<input name="exam_date" type="date" required></label><label class="auth-field">TYT neti<input name="tyt_net" type="number" min="0" max="200" step="0.25"></label><label class="auth-field">AYT neti<input name="ayt_net" type="number" min="0" max="200" step="0.25"></label><button class="auth-submit" type="submit">Denemeyi kaydet</button></form><div class="record-list" id="student-exams-list"><p class="record-empty">Henüz deneme sonucu eklenmedi.</p></div></section>
+					<section class="panel" style="grid-column:1/-1"><h2 class="panel-title">Deneme sonucunu ekle</h2><p class="panel-subtitle">Ders ders doğru ve yanlış sayını gir; netini sistem hesaplasın.</p><form id="exam-entry-form"><div class="compact-form"><label class="auth-field">Deneme adı<input name="exam_name" maxlength="120" required placeholder="Örn. TYT genel deneme"></label><label class="auth-field">Tarih<input name="exam_date" type="date" required></label></div><div class="exam-subject-grid" id="exam-subject-fields"></div><button class="auth-submit" type="submit">Denemeyi kaydet</button></form><div class="record-list" id="student-exams-list"><p class="record-empty">Henüz deneme sonucu eklenmedi.</p></div></section>
 				</div>
 				</section>
 				<section class="view" id="view-coach" aria-labelledby="coach-title">
-					<div class="welcome-row"><div><p class="eyebrow">Koç çalışma alanı</p><h1 id="coach-title">Öğrencilerim</h1><p class="welcome-subtitle">Öğrencilerini takip et, görev ve program oluştur.</p></div><div class="coach-code-box"><div><span>KOÇ KODUN</span><br><strong id="coach-code-display">Yükleniyor</strong></div><button id="copy-coach-code" type="button">Kodu kopyala</button></div></div>
+					<div class="welcome-row"><div><p class="eyebrow">Koç çalışma alanı</p><h1 id="coach-title">Öğrencilerim</h1><p class="welcome-subtitle">Öğrencilerini takip et, çalışma programı ve günlük alışkanlıklarını düzenle.</p></div><div class="coach-code-box"><div><span>KOÇ KODUN</span><br><strong id="coach-code-display">Yükleniyor</strong></div><button id="copy-coach-code" type="button">Kodu kopyala</button></div></div>
 					<div class="coach-layout">
 						<section class="panel"><div class="panel-header"><div><h2 class="panel-title">Bağlı öğrenciler</h2><p class="panel-subtitle" id="coach-student-count">Öğrencilerin burada listelenir.</p></div></div><div id="coach-students-list"><p class="record-empty">Henüz bağlı öğrenci yok.</p></div></section>
 						<section class="panel">
 							<div id="coach-student-empty" class="record-empty">Öğrenci ayrıntılarını görmek için soldan bir öğrenci seç.</div>
 							<div id="coach-student-detail" hidden>
 								<div class="coach-student-summary"><h3 id="selected-student-name"></h3><p id="selected-student-meta"></p></div>
-								<div class="coach-detail-sections"><section><h4>Deneme sonuçları</h4><div class="record-list" id="coach-exam-list"></div></section><section><h4>Verdiğin görevler</h4><div class="record-list" id="coach-task-list"></div></section><section><h4>Ders programı</h4><div class="record-list" id="coach-plan-list"></div></section></div>
+								<div class="calendar-panel panel"><div class="calendar-heading"><button type="button" data-calendar-month="-1" data-calendar-scope="coach" aria-label="Önceki ay">‹</button><strong id="coach-calendar-month"></strong><button type="button" data-calendar-month="1" data-calendar-scope="coach" aria-label="Sonraki ay">›</button></div><div class="calendar-grid" id="coach-calendar-grid"></div><p class="panel-subtitle" id="coach-calendar-selected-label"></p><div class="day-task-list" id="coach-calendar-day-plans"></div></div>
+								<div class="coach-detail-sections"><section><h4>Deneme sonuçları</h4><div class="record-list" id="coach-exam-list"></div></section><section><h4>Ders programı</h4><div class="record-list" id="coach-plan-list"></div></section><section><h4>Günlük alışkanlıklar</h4><div class="record-list" id="coach-habit-list"></div></section></div>
 								<div class="coach-forms">
-									<form id="coach-task-form"><h4>Görev / ödev ver</h4><div class="compact-form"><label class="auth-field">Ders<input name="subject" maxlength="80" required placeholder="AYT Matematik"></label><label class="auth-field">Son tarih<input name="due_date" type="date"></label><label class="auth-field">Görev başlığı<input name="title" maxlength="140" required placeholder="Türev testleri çöz"></label><label class="auth-field">Açıklama<input name="details" maxlength="500" placeholder="Sayfa veya konu bilgisi"></label><button class="auth-submit" type="submit">Görevi ata</button></div></form>
-									<form id="coach-plan-form"><h4>Ders programı yaz</h4><div class="compact-form"><label class="auth-field">Ders<input name="subject" maxlength="80" required placeholder="AYT Fizik"></label><label class="auth-field">Tarih ve saat<input name="starts_at" type="datetime-local" required></label><label class="auth-field">Çalışma başlığı<input name="title" maxlength="140" required placeholder="Elektrik konu tekrarı"></label><label class="auth-field">Not<input name="details" maxlength="500" placeholder="Hedef veya kaynak"></label><button class="auth-submit" type="submit">Programa ekle</button></div></form>
+									<form id="coach-plan-form"><h4>Takvime çalışma ekle</h4><div class="compact-form"><label class="auth-field">Ders<select name="subject" data-subject-select required></select></label><label class="auth-field">Seçili gün<input name="plan_date" type="date" required></label><label class="auth-field">Saat<input name="plan_time" type="time" value="09:00" required></label><label class="auth-field">Çalışma başlığı<input name="title" maxlength="140" required placeholder="Konu tekrarı / soru çözümü"></label><label class="auth-field">Not / sayfa bilgisi<input name="details" maxlength="500" placeholder="Sayfa veya hedef"></label><div><span class="auth-field">Kitap (isteğe bağlı)</span><div class="coach-book-picker" id="coach-book-picker"></div><input name="book_id" type="hidden"></div><button class="auth-submit" type="submit">Seçili güne ekle</button></div></form>
+									<form id="coach-habit-form"><h4>Her gün tekrarlanan alışkanlık ekle</h4><div class="compact-form"><label class="auth-field">Ders<select name="subject" data-subject-select required></select></label><label class="auth-field">Alışkanlık adı<input name="title" maxlength="140" required placeholder="Her gün 20 paragraf sorusu"></label><label class="auth-field">Açıklama<input name="details" maxlength="500" placeholder="Günlük hedef"></label><button class="auth-submit" type="submit">Alışkanlığı ekle</button></div></form>
 								</div>
 							</div>
 						</section>
 					</div>
 				</section>
-				<section class="view panel secondary-view" id="view-program" aria-labelledby="program-title"><div class="secondary-heading"><div><p class="eyebrow">Ders planı</p><h2 id="program-title">Çalışma programım</h2><p>Koçunun senin için planladığı çalışmalar.</p></div></div><div class="simple-list" id="student-program-view-list"></div></section>
-				<section class="view panel secondary-view" id="view-dersler" aria-labelledby="dersler-title"><div class="secondary-heading"><div><p class="eyebrow">TYT + AYT</p><h2 id="dersler-title">Derslerim</h2><p>Konu ilerlemeni takip et, sıradaki hedefini belirle.</p></div><div class="search-wrap"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input type="search" placeholder="Ders ara..." aria-label="Derslerde ara" data-filter="ders-list"></div></div><div class="simple-list" id="ders-list"><div class="simple-row"><span class="simple-symbol">M</span><span class="simple-copy"><strong>Matematik</strong><span>AYT · 18 konunun 11’i tamamlandı</span></span><span class="simple-meta">%61 tamamlandı</span></div><div class="simple-row"><span class="simple-symbol">F</span><span class="simple-copy"><strong>Fizik</strong><span>AYT · 12 konunun 7’si tamamlandı</span></span><span class="simple-meta">%58 tamamlandı</span></div><div class="simple-row"><span class="simple-symbol">K</span><span class="simple-copy"><strong>Kimya</strong><span>AYT · 10 konunun 6’sı tamamlandı</span></span><span class="simple-meta">%60 tamamlandı</span></div><div class="simple-row"><span class="simple-symbol">T</span><span class="simple-copy"><strong>Türkçe</strong><span>TYT · 14 konunun 12’si tamamlandı</span></span><span class="simple-meta">%86 tamamlandı</span></div><div class="simple-row"><span class="simple-symbol">B</span><span class="simple-copy"><strong>Biyoloji</strong><span>AYT · 11 konunun 5’i tamamlandı</span></span><span class="simple-meta">%45 tamamlandı</span></div></div></section>
-				<section class="view panel secondary-view" id="view-denemeler" aria-labelledby="denemeler-title"><div class="secondary-heading"><div><p class="eyebrow">Ölç, değerlendir, ilerle</p><h2 id="denemeler-title">Denemelerim</h2><p>Sonuçlarını kaydet ve gelişimini gör.</p></div><button class="primary-button" type="button" data-open-view="dashboard" data-show-exam-form>+ Deneme ekle</button></div><div class="simple-list"><div class="simple-row"><span class="simple-symbol">TYT</span><span class="simple-copy"><strong>Genel TYT Denemesi · Türkiye geneli</strong><span>Türkçe 31 · Sosyal 14 · Matematik 19 · Fen 8</span></span><span class="simple-meta">72,50 net · 8 Kas</span></div><div class="simple-row"><span class="simple-symbol">AYT</span><span class="simple-copy"><strong>AYT Sayısal Denemesi · Kurum denemesi</strong><span>Matematik 21 · Fizik 8 · Kimya 7 · Biyoloji 9</span></span><span class="simple-meta">45,00 net · 1 Kas</span></div><div class="simple-row"><span class="simple-symbol">TYT</span><span class="simple-copy"><strong>Genel TYT Denemesi · Türkiye geneli</strong><span>Türkçe 29 · Sosyal 13 · Matematik 17 · Fen 7</span></span><span class="simple-meta">66,25 net · 25 Eki</span></div></div></section>
-				<section class="view panel secondary-view" id="view-istatistikler" aria-labelledby="istatistikler-title"><div class="secondary-heading"><div><p class="eyebrow">Düzenli emek, görünür gelişim</p><h2 id="istatistikler-title">İstatistiklerim</h2><p>Çalışma ritmin ve deneme performansının özeti.</p></div></div><div class="stats-row" style="margin-top:0"><article class="stat-card"><div><span class="stat-label">Toplam çalışma</span><div class="stat-value">246<small>saat</small></div><span class="stat-note">Bu dönem</span></div></article><article class="stat-card"><div><span class="stat-label">Toplam soru</span><div class="stat-value">8.420</div><span class="stat-note">Tüm dersler</span></div></article><article class="stat-card"><div><span class="stat-label">TYT net değişimi</span><div class="stat-value">+12,5</div><span class="stat-note">Son 8 hafta</span></div></article><article class="stat-card"><div><span class="stat-label">En verimli ders</span><div class="stat-value">Türkçe</div><span class="stat-note">%86 konu ilerlemesi</span></div></article></div></section>
-				<section class="view panel secondary-view" id="view-notlar" aria-labelledby="notlar-title"><div class="secondary-heading"><div><p class="eyebrow">Kendin için kaydet</p><h2 id="notlar-title">Notlarım</h2><p>Önemli hatırlatmalarını ve çalışma notlarını burada tut.</p></div><div class="search-wrap"><svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><input type="search" placeholder="Notlarda ara..." aria-label="Notlarda ara" data-filter="not-list"></div></div><div class="simple-list" id="not-list"><div class="simple-row"><span class="simple-symbol">✎</span><span class="simple-copy"><strong>Türev · kritik noktalar</strong><span>Artan-azalan aralık sorularında önce türevin işaret tablosunu kur.</span></span><span class="simple-meta">Bugün</span></div><div class="simple-row"><span class="simple-symbol">✎</span><span class="simple-copy"><strong>Deneme analizi</strong><span>Problemlerde süreyi daha dengeli kullan; takıldığın soruyu işaretleyip geç.</span></span><span class="simple-meta">8 Kas</span></div><div class="simple-row"><span class="simple-symbol">✎</span><span class="simple-copy"><strong>Haftalık hedef</strong><span>Bu hafta AYT Fizik’te elektrik konusunu tamamla.</span></span><span class="simple-meta">5 Kas</span></div></div></section>
+				<section class="view panel secondary-view" id="view-program" aria-labelledby="program-title"><div class="secondary-heading"><div><p class="eyebrow">Günlük çalışmalar</p><h2 id="program-title">Programım</h2><p>Takvimden gün seç; o günün her çalışması için doğru, yanlış ve boş sayını kaydet.</p></div></div><div class="calendar-panel panel"><div class="calendar-heading"><button type="button" data-calendar-month="-1" data-calendar-scope="student" aria-label="Önceki ay">‹</button><strong id="student-calendar-month"></strong><button type="button" data-calendar-month="1" data-calendar-scope="student" aria-label="Sonraki ay">›</button></div><div class="calendar-grid" id="student-calendar-grid"></div><p class="panel-subtitle" id="student-calendar-selected-label"></p><div class="day-task-list" id="student-calendar-tasks"></div></div></section>
+				<section class="view panel secondary-view" id="view-aliskanliklar" aria-labelledby="habits-title"><div class="secondary-heading"><div><p class="eyebrow">Her gün küçük bir adım</p><h2 id="habits-title">Alışkanlıklarım</h2><p>Koçunun belirlediği rutinler her gün program takviminde görünür.</p></div><button class="primary-button" type="button" data-open-view="program">Bugünün programına git</button></div><div class="record-list" id="student-habits-list"><p class="record-empty">Koçun henüz günlük alışkanlık eklemedi.</p></div></section>
+				<section class="view panel secondary-view" id="view-dersler" aria-labelledby="dersler-title"><div class="secondary-heading"><div><p class="eyebrow">TYT + AYT</p><h2 id="dersler-title">Derslerim</h2><p>Denemelerde girdiğin ders netleri burada listelenir.</p></div></div><div class="simple-list" id="ders-list"><p class="record-empty">Ders netlerin ilk denemeni eklediğinde görünür.</p></div></section>
+				<section class="view panel secondary-view" id="view-denemeler" aria-labelledby="denemeler-title"><div class="secondary-heading"><div><p class="eyebrow">Ölç, değerlendir, ilerle</p><h2 id="denemeler-title">Denemelerim</h2><p>Ders netlerini gir; toplamları sistem hesaplasın.</p></div><button class="primary-button" type="button" data-open-view="dashboard" data-show-exam-form>+ Deneme ekle</button></div><div class="simple-list" id="student-exams-full-list"><p class="record-empty">Henüz deneme sonucu eklemedin.</p></div></section>
+				<section class="view panel secondary-view" id="view-istatistikler" aria-labelledby="istatistikler-title"><div class="secondary-heading"><div><p class="eyebrow">Günlük çalışma kayıtların</p><h2 id="istatistikler-title">İstatistiklerim</h2><p>Soru sayıları tarih ve derse göre kaydedilen cevaplarından hesaplanır.</p></div></div><div class="stats-row" id="student-statistics" style="margin-top:0"><article class="stat-card"><div><span class="stat-label">Toplam soru</span><div class="stat-value">0</div><span class="stat-note">Henüz veri yok</span></div></article><article class="stat-card"><div><span class="stat-label">Doğru</span><div class="stat-value">0</div><span class="stat-note">Henüz veri yok</span></div></article><article class="stat-card"><div><span class="stat-label">Yanlış</span><div class="stat-value">0</div><span class="stat-note">Henüz veri yok</span></div></article><article class="stat-card"><div><span class="stat-label">Boş</span><div class="stat-value">0</div><span class="stat-note">Henüz veri yok</span></div></article></div><div class="student-records-grid"><section class="panel"><h3 class="panel-title">Derslere göre toplam</h3><div class="record-list" id="statistics-subject-list"></div></section><section class="panel"><h3 class="panel-title">Günlere göre ders dağılımı</h3><div class="record-list" id="statistics-daily-list"></div></section></div></section>
+				<section class="view panel secondary-view" id="view-hata-defteri" aria-labelledby="hata-title"><div class="secondary-heading"><div><p class="eyebrow">Yanlışlarından öğren</p><h2 id="hata-title">Hata Defterim</h2><p>Sorunun fotoğrafını seç ya da kameranla çek; kartları karışık sırayla gözden geçir.</p></div></div><form class="error-upload-form" id="error-upload-form"><label class="auth-field">Soru fotoğrafı<input name="image" type="file" accept="image/*" capture="environment" required></label><label class="auth-field">Ders (isteğe bağlı)<select name="subject" id="error-subject-select"></select></label><label class="auth-field">Kendine not (isteğe bağlı)<textarea name="note" maxlength="500" rows="2" placeholder="Bu soruda nerede yanıldım?"></textarea></label><button class="primary-button" type="submit">Soruyu deftere ekle</button></form><button class="primary-button" id="start-error-review" type="button">Defteri başlat</button><div class="flashcard-stage" id="flashcard-stage" hidden><button class="flashcard-arrow" type="button" data-flashcard-step="-1" aria-label="Önceki soru">‹</button><div><div class="flashcard" id="flashcard"><p class="record-empty">Hata defterinde henüz soru yok.</p></div><p class="flashcard-meta" id="flashcard-meta"></p></div><button class="flashcard-arrow" type="button" data-flashcard-step="1" aria-label="Sonraki soru">›</button></div><div class="error-card-grid" id="error-question-list"></div></section>
+				<section class="view panel secondary-view" id="view-kitaplarim" aria-labelledby="books-title"><div class="secondary-heading"><div><p class="eyebrow">Kaynaklarını ekle</p><h2 id="books-title">Kitaplarım</h2><p>Kitap kapağını fotoğraflayıp adını ekle. Koçun program hazırlarken seçebilir.</p></div></div><form class="error-upload-form" id="book-entry-form"><label class="auth-field">Kitap adı<input name="name" maxlength="120" required placeholder="Örn. TYT Matematik Soru Bankası"></label><label class="auth-field">Kitap kapağı<input name="image" type="file" accept="image/*" capture="environment" required></label><button class="primary-button" type="submit">Kitabı ekle</button></form><div class="book-grid" id="book-list"></div></section>
+				<section class="view panel secondary-view" id="view-notlar" aria-labelledby="notlar-title"><div class="secondary-heading"><div><p class="eyebrow">Kendin için kaydet</p><h2 id="notlar-title">Notlarım</h2><p>Burada henüz kaydedilmiş not bulunmuyor.</p></div></div><div class="simple-list" id="not-list"><p class="record-empty">Not eklediğinde burada görünür.</p></div></section>
 				<footer style="padding-top:20px;color:#929b95;font-size:10px">Bugün kendin için yaptığın her şey, yarınki hedefine biraz daha yakın.</footer>
 			</div>
 		</main>
 	</div>
 	<div class="toast" id="toast" role="status" aria-live="polite"></div>
+	<button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" aria-label="Koyu temayı aç"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 15.2A8 8 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Koyu tema</span></button>
 	</div>
 	<script>
-		const viewNames = { dashboard: "Genel Bakış", program: "Programım", dersler: "Dersler", denemeler: "Denemeler", istatistikler: "İstatistikler", notlar: "Notlarım" };
+		const sessionCheckFallback = window.setTimeout(() => document.body.classList.remove("session-checking"), 6000);
+		window.rotaFinishSessionCheck = () => {
+			window.clearTimeout(sessionCheckFallback);
+			document.body.classList.remove("session-checking");
+		};
+		const viewNames = { dashboard: "Genel Bakış", program: "Programım", aliskanliklar: "Alışkanlıklar", dersler: "Dersler", denemeler: "Denemeler", "hata-defteri": "Hata Defteri", kitaplarim: "Kitaplarım", istatistikler: "İstatistikler", notlar: "Notlarım" };
 		const navItems = [...document.querySelectorAll(".nav-item[data-view]")];
 		const views = [...document.querySelectorAll(".view")];
 		const welcomeScreen = document.querySelector("#welcome-screen");
@@ -621,6 +718,22 @@
 		const backdrop = document.querySelector("#sidebar-backdrop");
 		const toast = document.querySelector("#toast");
 		let toastTimer;
+		const themeToggle = document.querySelector("#theme-toggle");
+		const savedTheme = localStorage.getItem("rota-theme") || "light";
+		function setTheme(theme) {
+			const isDark = theme === "dark";
+			dashboardApp.dataset.theme = isDark ? "dark" : "light";
+			themeToggle.setAttribute("aria-pressed", String(isDark));
+			themeToggle.setAttribute("aria-label", isDark ? "Açık temayı aç" : "Koyu temayı aç");
+			themeToggle.querySelector("span").textContent = isDark ? "Açık tema" : "Koyu tema";
+			themeToggle.innerHTML = `${isDark ? '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 15.2A8 8 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>'}<span>${isDark ? "Açık tema" : "Koyu tema"}</span>`;
+		}
+		setTheme(savedTheme);
+		themeToggle.addEventListener("click", () => {
+			const nextTheme = dashboardApp.dataset.theme === "dark" ? "light" : "dark";
+			localStorage.setItem("rota-theme", nextTheme);
+			setTheme(nextTheme);
+		});
 
 		function showToast(message) {
 			toast.textContent = message;
@@ -648,6 +761,7 @@
 		window.rotaShowToast = showToast;
 		window.rotaEnterApp = (profile) => {
 			window.rotaProfile = profile;
+			window.rotaFinishSessionCheck();
 			welcomeScreen.hidden = true;
 			dashboardApp.hidden = false;
 			const isCoach = profile.role === "coach";
@@ -657,12 +771,30 @@
 			const dashboardLabel = [...document.querySelector('[data-view="dashboard"]').childNodes].find((node) => node.nodeType === Node.TEXT_NODE);
 			if (dashboardLabel) dashboardLabel.textContent = isCoach ? "Öğrencilerim" : "Genel Bakış";
 			document.querySelector("#signout-button").hidden = false;
-			openView("dashboard");
+			openView(window.rotaGetRequestedView() || "dashboard");
+		};
+		window.rotaGetRequestedView = () => {
+			const hash = window.location.hash.slice(1);
+			if (hash === "genel-bakis") return "dashboard";
+			return viewNames[hash] ? hash : null;
+		};
+		window.rotaHasPanelRoute = () => {
+			const hash = window.location.hash.slice(1);
+			return hash === "genel-bakis" || Boolean(viewNames[hash]);
+		};
+		window.rotaShowLogin = () => {
+			window.rotaFinishSessionCheck();
+			welcomeScreen.hidden = true;
+			dashboardApp.hidden = true;
+			authOverlay.hidden = false;
+			setAuthMode("login");
 		};
 		window.rotaShowLanding = () => {
+			window.rotaFinishSessionCheck();
 			window.rotaProfile = null;
 			dashboardApp.hidden = true;
 			welcomeScreen.hidden = false;
+			authOverlay.hidden = true;
 			document.querySelector("#signout-button").hidden = true;
 		};
 
@@ -714,18 +846,6 @@
 		backdrop.addEventListener("click", closeMenu);
 		document.querySelector("#notification-button").addEventListener("click", () => showToast("Yeni bildirimin yok. Her şey yolunda!"));
 		document.querySelector("#profile-button").addEventListener("click", () => showToast("Profil ayarları yakında burada."));
-
-		const taskChecks = [...document.querySelectorAll(".task-check")];
-		function updateTasks() {
-			const complete = taskChecks.filter((check) => check.checked).length;
-			document.querySelector("#task-progress").textContent = complete;
-			document.querySelector(".focus-copy h2").textContent = `Planının %${Math.round((complete / taskChecks.length) * 100)}’i tamamlandı`;
-			document.querySelector(".focus-progress").style.background = `conic-gradient(var(--sidebar) 0 ${Math.round((complete / taskChecks.length) * 100)}%, rgba(51,91,50,.16) ${Math.round((complete / taskChecks.length) * 100)}% 100%)`;
-			document.querySelector(".focus-progress").setAttribute("aria-label", `Günlük planın yüzde ${Math.round((complete / taskChecks.length) * 100)}'i tamamlandı`);
-			document.querySelector(".focus-progress span").innerHTML = `${Math.round((complete / taskChecks.length) * 100)}%<small>TAMAMLANDI</small>`;
-			taskChecks.forEach((check) => check.closest(".task-row").classList.toggle("is-done", check.checked));
-		}
-		taskChecks.forEach((check) => check.addEventListener("change", updateTasks));
 
 		document.querySelectorAll("[data-filter]").forEach((input) => input.addEventListener("input", () => {
 			const list = document.getElementById(input.dataset.filter);

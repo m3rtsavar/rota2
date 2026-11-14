@@ -27,6 +27,10 @@ Site HTTPS üzerinden yayınlandığında PWA olarak kurulabilir. iPhone veya iP
 
 Uygulama kabuğu Service Worker ile önbelleğe alınır; giriş ve Supabase verileri çevrimdışı kullanılmaz. `file://` adresinde veya HTTPS olmayan bir ağ adresinde PWA kurulumu kullanılamaz. Yayın adresini Supabase **Authentication > URL Configuration** bölümünde Site URL ve Redirect URLs listesine ekle.
 
+## Android APK
+
+`android/` klasörü, `https://rota2.vercel.app/` adresini güvenli Android WebView içinde açan bir uygulama içerir. `main` dalına Android dosyaları gönderildiğinde GitHub Actions imzalı olmayan, test kurulumu için kullanılabilen bir debug APK üretir ve 30 gün süreyle Actions artifact'ı olarak saklar. APK'yı GitHub deposunda **Actions > Android APK > ilgili başarılı çalıştırma > Artifacts** bölümünden indir. Play Store dağıtımı için ayrı bir release imza anahtarı gerekir; bu depoya imza anahtarı veya parolası ekleme.
+
 ## Supabase kurulumu
 
 Kurulum, Auth URL yapılandırması ve veritabanı şemasını çalıştırma adımları [`supabase/README.md`](supabase/README.md) dosyasındadır. Önce [`supabase/schema.sql`](supabase/schema.sql) içeriğini Supabase SQL Editor'da çalıştır.

@@ -4,5 +4,9 @@
 node_modules/
 dist/
 coverage/
+android/.gradle/
+android/local.properties
+android/**/build/
+*.apk
 .DS_Store
 Thumbs.db

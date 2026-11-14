@@ -16,10 +16,16 @@ YKS öğrencileri ve koçları için çalışma planı, deneme takibi ve görev 
 Proje statik HTML/CSS/JavaScript kullanır. E-posta yönlendirmeleri `file://` ile çalışmadığından yerel HTTP sunucusu kullan:
 
 ```powershell
-python -m http.server 5500
+python dev-server.py
 ```
 
 Ardından `http://127.0.0.1:5500` adresini aç.
+
+## iOS ve ana ekran kurulumu
+
+Site HTTPS üzerinden yayınlandığında PWA olarak kurulabilir. iPhone veya iPad'de Safari'de siteyi aç, **Paylaş > Ana Ekrana Ekle** adımlarını izle. Android ve destekleyen masaüstü tarayıcılarda karşılama sayfasındaki **Ana ekrana ekle** düğmesini kullan.
+
+Uygulama kabuğu Service Worker ile önbelleğe alınır; giriş ve Supabase verileri çevrimdışı kullanılmaz. `file://` adresinde veya HTTPS olmayan bir ağ adresinde PWA kurulumu kullanılamaz. Yayın adresini Supabase **Authentication > URL Configuration** bölümünde Site URL ve Redirect URLs listesine ekle.
 
 ## Supabase kurulumu
 

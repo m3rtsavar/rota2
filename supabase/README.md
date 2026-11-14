@@ -1,9 +1,9 @@
 # Supabase kurulumu
 
 1. Supabase Dashboard'da **SQL Editor** aç, `schema.sql` dosyasının tamamını çalıştır. Yeni özellikler için dosyanın güncel halini yeniden çalıştır; tablolar, erişim kuralları ve özel `student-media` fotoğraf deposu burada kurulur.
-2. **Authentication > URL Configuration** bölümünde Site URL değerini `http://127.0.0.1:5500` yap ve Redirect URLs listesine `http://127.0.0.1:5500/**` ekle.
+2. Yerel deneme için **Authentication > URL Configuration** bölümünde Site URL değerini `http://127.0.0.1:5500` yap ve Redirect URLs listesine `http://127.0.0.1:5500/**` ekle. Yayında gerçek HTTPS alan adını Site URL olarak ayarla ve yalnızca gerekli yayın adresleri için Redirect URL ekle.
 3. E-posta sağlayıcısını etkinleştir. E-posta doğrulaması açıksa kayıt sonrası gelen doğrulama bağlantısını kullan.
-4. Projeyi yerelde `python -m http.server 5500` komutuyla çalıştır ve `http://127.0.0.1:5500` adresini aç.
+4. Projeyi yerelde `python dev-server.py` komutuyla çalıştır ve `http://127.0.0.1:5500` adresini aç. iOS ana ekran kurulumu için site HTTPS üzerinden yayınlanmalı; Safari'de Paylaş > Ana Ekrana Ekle adımlarını izle.
 
 İstemci yalnızca publishable anahtarı kullanır. `service_role` veya secret anahtarını tarayıcıya ekleme. RLS ve tablo izinleri `schema.sql` içinde tanımlıdır; SQL dosyası Supabase'e uygulanmadan kayıt sonrası profil ve panel verileri çalışmaz.
 
